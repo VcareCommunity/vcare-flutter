@@ -1,0 +1,62 @@
+{
+  "appName": "VCare",
+  "@appName": {
+    "description": "应用名称"
+  },
+  "home": "Home",
+  "@home": {
+    "description": "首页"
+  },
+  "mine": "Mine",
+  "@mine": {
+    "description": "我的"
+  },
+  "login": "Login",
+  "@login": {
+    "description": "登录"
+  },
+  "register": "Register",
+  "@register": {
+    "description": "注册"
+  },
+  "clickLogin": "Click login",
+  "@clickLogin": {
+    "description": "点击登录"
+  },
+  "notLogin": "Not login",
+  "@notLogin": {
+    "description": "未登录"
+  },
+  "changeTheme": "Change theme",
+  "@changeTheme": {
+    "description": "切换主题"
+  },
+  "darkMode": "Dark mode",
+  "@darkMode": {
+    "description": "夜间模式"
+  },
+  "username": "Username",
+  "@username": {
+    "description": "用户名"
+  },
+  "password": "Password",
+  "@password": {
+    "description": "密码"
+  },
+  "passwordAgain": "Confirm your password",
+  "@passwordAgain": {
+    "description": "确认密码"
+  },
+  "usernamePlaceholder": "Please Enter your username",
+  "@usernamePlaceholder": {
+    "description": "请输入用户名"
+  },
+  "passwordPlaceholder": "Please Enter your password",
+  "@passwordPlaceholder": {
+    "description": "请输入密码"
+  },
+  "passwordAgainPlaceholder": "Please Enter your password again",
+  "@passwordAgainPlaceholder": {
+    "description": "再次输入密码"
+  }
+}

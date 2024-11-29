@@ -1,0 +1,17 @@
+{
+  "appName": "微惗",
+  "home": "首页",
+  "mine": "我的",
+  "login": "登录",
+  "register": "注册",
+  "clickLogin": "点击登录",
+  "notLogin": "未登录",
+  "changeTheme": "切换主题",
+  "darkMode": "夜间模式",
+  "username": "用户名",
+  "password": "密码",
+  "passwordAgain": "确认密码",
+  "usernamePlaceholder": "请输入用户名",
+  "passwordPlaceholder": "请输入密码",
+  "passwordAgainPlaceholder": "请再次输入密码"
+}
