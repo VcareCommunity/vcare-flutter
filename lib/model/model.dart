@@ -51,7 +51,7 @@ const SqfEntityTable tableTheme = SqfEntityTable(
     useSoftDeleting: false,
     fields: [
       SqfEntityField("name", DbType.text, isNotNull: true),
-      SqfEntityField("themeColor", DbType.text, isNotNull: true),
+      SqfEntityField("themeColor", DbType.integer, isNotNull: true),
     ]);
 
 ///Token表

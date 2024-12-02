@@ -371,9 +371,10 @@ class ThemeAddState extends State {
   Widget buildRowThemeColor() {
     return TextFormField(
       validator: (value) {
-        if (value == null || value.isEmpty) {
-          return 'Please enter ThemeColor';
+        if (int.tryParse(value!) == null) {
+          return 'Please Enter valid number (required)';
         }
+
         return null;
       },
       controller: txtThemeColor,
@@ -398,7 +399,7 @@ class ThemeAddState extends State {
   void save() async {
     theme
       ..name = txtName.text
-      ..themeColor = txtThemeColor.text;
+      ..themeColor = int.tryParse(txtThemeColor.text);
     await theme.save();
     if (theme.saveResult!.success) {
       Navigator.pop(context, true);

@@ -6,10 +6,11 @@ import 'package:vcare_flutter/model/model.dart';
 /// App状态
 class VcareAppState extends ChangeNotifier {
   int communityCount = 0;
+  Setting setting = Setting(isDark: false, themeId: 1);
 
   Future<void> initState() async {
-    communityCount = await initCommunity();
     await initTheme();
+    communityCount = await initCommunity();
   }
 
   Future<int> initCommunity() async {
@@ -25,9 +26,5 @@ class VcareAppState extends ChangeNotifier {
       List dbThemeList = await Theme.saveAll(defaultThemeList);
       printList(dbThemeList);
     }
-  }
-
-  Future<void> initSetting() async{
-
   }
 }

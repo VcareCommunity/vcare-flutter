@@ -88,7 +88,7 @@ class TableTheme extends SqfEntityTableBase {
     // declare fields
     fields = [
       SqfEntityFieldBase('name', DbType.text, isNotNull: true),
-      SqfEntityFieldBase('themeColor', DbType.text, isNotNull: true),
+      SqfEntityFieldBase('themeColor', DbType.integer, isNotNull: true),
     ];
     super.init();
   }
@@ -2037,13 +2037,13 @@ class Theme extends TableBase {
       name = o['name'].toString();
     }
     if (o['themeColor'] != null) {
-      themeColor = o['themeColor'].toString();
+      themeColor = int.tryParse(o['themeColor'].toString());
     }
   }
   // FIELDS (Theme)
   int? id;
   String? name;
-  String? themeColor;
+  int? themeColor;
 
   // end FIELDS (Theme)
 
@@ -2609,7 +2609,7 @@ class ThemeFilterBuilder extends ConjunctionBase {
 
   ThemeField? _themeColor;
   ThemeField get themeColor {
-    return _themeColor = _setField(_themeColor, 'themeColor', DbType.text);
+    return _themeColor = _setField(_themeColor, 'themeColor', DbType.integer);
   }
 
   /// Deletes List<Theme> bulk by query
@@ -2925,7 +2925,7 @@ class ThemeFields {
   static TableField? _fThemeColor;
   static TableField get themeColor {
     return _fThemeColor = _fThemeColor ??
-        SqlSyntax.setField(_fThemeColor, 'themeColor', DbType.text);
+        SqlSyntax.setField(_fThemeColor, 'themeColor', DbType.integer);
   }
 }
 // endregion ThemeFields
