@@ -2,21 +2,20 @@ import 'package:flutter/widgets.dart';
 import 'package:sqfentity/sqfentity.dart';
 import 'package:vcare_flutter/common/constants.dart';
 import 'package:vcare_flutter/model/model.dart';
+import 'package:vcare_flutter/prefs/prefs.dart';
 
 /// App状态
 class VcareAppState extends ChangeNotifier {
-  int communityCount = 0;
-  Setting setting = Setting(isDark: false, themeId: 1);
+  Setting setting = defaultSetting;
+  Theme theme = defaultThemeList[0];
 
   Future<void> initState() async {
     await initTheme();
-    communityCount = await initCommunity();
-  }
-
-  Future<int> initCommunity() async {
-    //查询是否为第一次使用
-    int count = await Community().select().toCount();
-    return count;
+    var settingId = await Prefs.getSettingId();
+    if (settingId != null) {
+      setting = (await Setting().getById(settingId))!;
+      theme = (await setting.getTheme())!;
+    }
   }
 
   Future<void> initTheme() async {

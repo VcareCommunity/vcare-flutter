@@ -6,3 +6,5 @@ final List<Theme> defaultThemeList = [
   Theme(name: "寇梢绿", themeColor: 0xff5dbe8a),
   Theme(name: "桔梗紫", themeColor: 0xff813c85)
 ];
+
+final Setting defaultSetting = Setting(isDark: false, themeId: 1);

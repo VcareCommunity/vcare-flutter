@@ -14,18 +14,18 @@ part of 'model.dart';
 
 //  To use these SqfEntity classes do following:
 //  - import model.dart into where to use
-//  - start typing ex:Community.select()... (add a few filters with fluent methods)...(add orderBy/orderBydesc if you want)...
+//  - start typing ex:Setting.select()... (add a few filters with fluent methods)...(add orderBy/orderBydesc if you want)...
 //  - and then just put end of filters / or end of only select()  toSingle() / or toList()
 //  - you can select one or return List<yourObject> by your filters and orders
 //  - also you can batch update or batch delete by using delete/update methods instead of tosingle/tolist methods
 //    Enjoy.. Huseyin Tokpunar
 
 // BEGIN TABLES
-// Community TABLE
-class TableCommunity extends SqfEntityTableBase {
-  TableCommunity() {
+// Setting TABLE
+class TableSetting extends SqfEntityTableBase {
+  TableSetting() {
     // declare properties of EntityTable
-    tableName = 'community';
+    tableName = 'setting';
     primaryKeyName = 'id';
     primaryKeyType = PrimaryKeyType.integer_auto_incremental;
     useSoftDeleting = false;
@@ -37,35 +37,10 @@ class TableCommunity extends SqfEntityTableBase {
           isUnique: true, isNotNull: true),
       SqfEntityFieldBase('name', DbType.text, isNotNull: true),
       SqfEntityFieldBase('version', DbType.text, isNotNull: true),
-    ];
-    super.init();
-  }
-  static SqfEntityTableBase? _instance;
-  static SqfEntityTableBase get getInstance {
-    return _instance = _instance ?? TableCommunity();
-  }
-}
-
-// Setting TABLE
-class TableSetting extends SqfEntityTableBase {
-  TableSetting() {
-    // declare properties of EntityTable
-    tableName = 'settings';
-    relationType = RelationType.ONE_TO_ONE;
-    primaryKeyName = 'id';
-    primaryKeyType = PrimaryKeyType.integer_auto_incremental;
-    useSoftDeleting = false;
-    // when useSoftDeleting is true, creates a field named 'isDeleted' on the table, and set to '1' this field when item deleted (does not hard delete)
-
-    // declare fields
-    fields = [
       SqfEntityFieldBase('isDark', DbType.bool,
-          defaultValue: false, isNotNull: true),
+          defaultValue: true, isNotNull: true),
       SqfEntityFieldRelationshipBase(TableTheme.getInstance, DeleteRule.CASCADE,
           relationType: RelationType.ONE_TO_MANY, fieldName: 'themeId'),
-      SqfEntityFieldRelationshipBase(
-          TableCommunity.getInstance, DeleteRule.CASCADE,
-          relationType: RelationType.ONE_TO_ONE, fieldName: '_communityId'),
     ];
     super.init();
   }
@@ -114,8 +89,8 @@ class TableToken extends SqfEntityTableBase {
       SqfEntityFieldBase('token', DbType.text, isNotNull: true),
       SqfEntityFieldBase('refreshToken', DbType.text),
       SqfEntityFieldRelationshipBase(
-          TableCommunity.getInstance, DeleteRule.CASCADE,
-          relationType: RelationType.ONE_TO_ONE, fieldName: '_communityId'),
+          TableSetting.getInstance, DeleteRule.CASCADE,
+          relationType: RelationType.ONE_TO_ONE, fieldName: '_settingId'),
     ];
     super.init();
   }
@@ -135,7 +110,6 @@ class VcareDbModel extends SqfEntityModelProvider {
     preSaveAction = vcareDbModel.preSaveAction;
     logFunction = vcareDbModel.logFunction;
     databaseTables = [
-      TableCommunity.getInstance,
       TableSetting.getInstance,
       TableTheme.getInstance,
       TableToken.getInstance,
@@ -147,8 +121,7 @@ class VcareDbModel extends SqfEntityModelProvider {
   }
   Map<String, dynamic> getControllers() {
     final controllers = <String, dynamic>{};
-    controllers['community'] = CommunityController.getController;
-    controllers['settings'] = SettingController.getController;
+    controllers['setting'] = SettingController.getController;
     controllers['theme'] = ThemeController.getController;
     controllers['token'] = TokenController.getController;
 
@@ -158,20 +131,28 @@ class VcareDbModel extends SqfEntityModelProvider {
 // END DATABASE MODEL
 
 // BEGIN ENTITIES
-// region Community
-class Community extends TableBase {
-  Community({this.id, this.baseUrl, this.name, this.version}) {
+// region Setting
+class Setting extends TableBase {
+  Setting(
+      {this.id,
+      this.baseUrl,
+      this.name,
+      this.version,
+      this.isDark,
+      this.themeId}) {
     _setDefaultValues();
     softDeleteActivated = false;
   }
-  Community.withFields(this.baseUrl, this.name, this.version) {
+  Setting.withFields(
+      this.baseUrl, this.name, this.version, this.isDark, this.themeId) {
     _setDefaultValues();
   }
-  Community.withId(this.id, this.baseUrl, this.name, this.version) {
+  Setting.withId(this.id, this.baseUrl, this.name, this.version, this.isDark,
+      this.themeId) {
     _setDefaultValues();
   }
   // fromMap v2.0
-  Community.fromMap(Map<String, dynamic> o, {bool setDefaultValues = true}) {
+  Setting.fromMap(Map<String, dynamic> o, {bool setDefaultValues = true}) {
     if (setDefaultValues) {
       _setDefaultValues();
     }
@@ -185,988 +166,11 @@ class Community extends TableBase {
     if (o['version'] != null) {
       version = o['version'].toString();
     }
-  }
-  // FIELDS (Community)
-  int? id;
-  String? baseUrl;
-  String? name;
-  String? version;
-
-  // end FIELDS (Community)
-
-// COLLECTIONS & VIRTUALS (Community)
-  Setting? _setting;
-  Setting get setting {
-    return _setting = _setting ?? Setting();
-  }
-
-  set setting(Setting setting) {
-    _setting = setting;
-  }
-
-  Token? _token;
-  Token get token {
-    return _token = _token ?? Token();
-  }
-
-  set token(Token token) {
-    _token = token;
-  }
-
-// END COLLECTIONS & VIRTUALS (Community)
-
-  static const bool _softDeleteActivated = false;
-  CommunityManager? __mnCommunity;
-
-  CommunityManager get _mnCommunity {
-    return __mnCommunity = __mnCommunity ?? CommunityManager();
-  }
-
-  // METHODS
-  @override
-  Map<String, dynamic> toMap(
-      {bool forQuery = false, bool forJson = false, bool forView = false}) {
-    final map = <String, dynamic>{};
-    map['id'] = id;
-    if (baseUrl != null || !forView) {
-      map['baseUrl'] = baseUrl;
-    }
-    if (name != null || !forView) {
-      map['name'] = name;
-    }
-    if (version != null || !forView) {
-      map['version'] = version;
-    }
-
-    return map;
-  }
-
-  @override
-  Future<Map<String, dynamic>> toMapWithChildren(
-      [bool forQuery = false,
-      bool forJson = false,
-      bool forView = false]) async {
-    final map = <String, dynamic>{};
-    map['id'] = id;
-    if (baseUrl != null || !forView) {
-      map['baseUrl'] = baseUrl;
-    }
-    if (name != null || !forView) {
-      map['name'] = name;
-    }
-    if (version != null || !forView) {
-      map['version'] = version;
-    }
-
-// COLLECTIONS (Community)
-    if (!forQuery) {
-      map['setting'] = await setting.toMapWithChildren();
-    }
-    if (!forQuery) {
-      map['token'] = await token.toMapWithChildren();
-    }
-// END COLLECTIONS (Community)
-
-    return map;
-  }
-
-  /// This method returns Json String [Community]
-  @override
-  String toJson() {
-    return json.encode(toMap(forJson: true));
-  }
-
-  /// This method returns Json String [Community]
-  @override
-  Future<String> toJsonWithChilds() async {
-    return json.encode(await toMapWithChildren(false, true));
-  }
-
-  @override
-  List<dynamic> toArgs() {
-    return [baseUrl, name, version];
-  }
-
-  @override
-  List<dynamic> toArgsWithIds() {
-    return [id, baseUrl, name, version];
-  }
-
-  static Future<List<Community>?> fromWebUrl(Uri uri,
-      {Map<String, String>? headers}) async {
-    try {
-      final response = await http.get(uri, headers: headers);
-      return await fromJson(response.body);
-    } catch (e) {
-      debugPrint(
-          'SQFENTITY ERROR Community.fromWebUrl: ErrorMessage: ${e.toString()}');
-      return null;
-    }
-  }
-
-  Future<http.Response> postUrl(Uri uri, {Map<String, String>? headers}) {
-    return http.post(uri, headers: headers, body: toJson());
-  }
-
-  static Future<List<Community>> fromJson(String jsonBody) async {
-    final Iterable list = await json.decode(jsonBody) as Iterable;
-    var objList = <Community>[];
-    try {
-      objList = list
-          .map((community) =>
-              Community.fromMap(community as Map<String, dynamic>))
-          .toList();
-    } catch (e) {
-      debugPrint(
-          'SQFENTITY ERROR Community.fromJson: ErrorMessage: ${e.toString()}');
-    }
-    return objList;
-  }
-
-  static Future<List<Community>> fromMapList(List<dynamic> data,
-      {bool preload = false,
-      List<String>? preloadFields,
-      bool loadParents = false,
-      List<String>? loadedFields,
-      bool setDefaultValues = true}) async {
-    final List<Community> objList = <Community>[];
-    loadedFields = loadedFields ?? [];
-    for (final map in data) {
-      final obj = Community.fromMap(map as Map<String, dynamic>,
-          setDefaultValues: setDefaultValues);
-      // final List<String> _loadedFields = List<String>.from(loadedFields);
-
-//      RELATIONS OneToOne (Community)
-      obj
-        .._setting =
-            await Setting().select()._communityId.equals(obj.id).toSingle()
-        .._token = await Token()
-            .select()
-            ._communityId
-            .equals(obj.id)
-            .toSingle(); //      END RELATIONS OneToOne (Community)
-
-      objList.add(obj);
-    }
-    return objList;
-  }
-
-  /// returns Community by ID if exist, otherwise returns null
-  /// Primary Keys: int? id
-  /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
-  /// ex: getById(preload:true) -> Loads all related objects
-  /// List<String> preloadFields: specify the fields you want to preload (preload parameter's value should also be "true")
-  /// ex: getById(preload:true, preloadFields:['plField1','plField2'... etc])  -> Loads only certain fields what you specified
-  /// bool loadParents: if true, loads all parent objects until the object has no parent
-
-  /// <returns>returns [Community] if exist, otherwise returns null
-  Future<Community?> getById(int? id,
-      {bool preload = false,
-      List<String>? preloadFields,
-      bool loadParents = false,
-      List<String>? loadedFields}) async {
-    if (id == null) {
-      return null;
-    }
-    Community? obj;
-    final data = await _mnCommunity.getById([id]);
-    if (data.length != 0) {
-      obj = Community.fromMap(data[0] as Map<String, dynamic>);
-
-//      RELATIONS OneToOne (Community)
-      obj
-        .._setting =
-            await Setting().select()._communityId.equals(obj.id).toSingle()
-        .._token = await Token()
-            .select()
-            ._communityId
-            .equals(obj.id)
-            .toSingle(); //      END RELATIONS OneToOne (Community)
-    } else {
-      obj = null;
-    }
-    return obj;
-  }
-
-  /// Saves the (Community) object. If the id field is null, saves as a new record and returns new id, if id is not null then updates record
-  /// ignoreBatch = true as a default. Set ignoreBatch to false if you run more than one save() operation those are between batchStart and batchCommit
-  /// <returns>Returns id
-  @override
-  Future<int?> save({bool ignoreBatch = true}) async {
-    if (id == null || id == 0) {
-      id = await _mnCommunity.insert(this, ignoreBatch);
-    } else {
-      await _mnCommunity.update(this);
-    }
-
-// save() OneToOne relations (Community)
-    _setting?._communityId = id;
-    await _setting?._save();
-    _token?._communityId = id;
-    await _token?._save();
-// END save() OneToOne relations (Community)
-
-    return id;
-  }
-
-  /// Saves the (Community) object. If the id field is null, saves as a new record and returns new id, if id is not null then updates record
-  /// ignoreBatch = true as a default. Set ignoreBatch to false if you run more than one save() operation those are between batchStart and batchCommit
-  /// <returns>Returns id
-  @override
-  Future<int?> saveOrThrow({bool ignoreBatch = true}) async {
-    if (id == null || id == 0) {
-      id = await _mnCommunity.insertOrThrow(this, ignoreBatch);
-
-      isInsert = true;
-    } else {
-      // id= await _upsert(); // removed in sqfentity_gen 1.3.0+6
-      await _mnCommunity.updateOrThrow(this);
-    }
-
-// save() OneToOne relations (Community)
-    _setting?._communityId = id;
-    await _setting?._save();
-    _token?._communityId = id;
-    await _token?._save();
-// END save() OneToOne relations (Community)
-
-    return id;
-  }
-
-  /// saveAs Community. Returns a new Primary Key value of Community
-
-  /// <returns>Returns a new Primary Key value of Community
-  @override
-  Future<int?> saveAs({bool ignoreBatch = true}) async {
-    id = null;
-
-// saveAs() OneToOne relations (Community)
-    setting.id = null;
-    token.id = null;
-// END saveAs() OneToOne relations (Community)
-
-    return save(ignoreBatch: ignoreBatch);
-  }
-
-  /// saveAll method saves the sent List<Community> as a bulk in one transaction
-  /// Returns a <List<BoolResult>>
-  static Future<List<dynamic>> saveAll(List<Community> communities,
-      {bool? exclusive, bool? noResult, bool? continueOnError}) async {
-    List<dynamic>? result = [];
-    // If there is no open transaction, start one
-    final isStartedBatch = await VcareDbModel().batchStart();
-    for (final obj in communities) {
-      await obj.save(ignoreBatch: false);
-    }
-    if (!isStartedBatch) {
-      result = await VcareDbModel().batchCommit(
-          exclusive: exclusive,
-          noResult: noResult,
-          continueOnError: continueOnError);
-      for (int i = 0; i < communities.length; i++) {
-        if (communities[i].id == null) {
-          communities[i].id = result![i] as int;
-        }
-      }
-    }
-    return result!;
-  }
-
-  /// Updates if the record exists, otherwise adds a new row
-  /// <returns>Returns id
-  @override
-  Future<int?> upsert({bool ignoreBatch = true}) async {
-    try {
-      final result = await _mnCommunity.rawInsert(
-          'INSERT OR REPLACE INTO community (id, baseUrl, name, version)  VALUES (?,?,?,?)',
-          [id, baseUrl, name, version],
-          ignoreBatch);
-      if (result! > 0) {
-        saveResult = BoolResult(
-            success: true,
-            successMessage: 'Community id=$id updated successfully');
-      } else {
-        saveResult = BoolResult(
-            success: false, errorMessage: 'Community id=$id did not update');
-      }
-      return id;
-    } catch (e) {
-      saveResult = BoolResult(
-          success: false,
-          errorMessage: 'Community Save failed. Error: ${e.toString()}');
-      return null;
-    }
-  }
-
-  /// inserts or replaces the sent List<<Community>> as a bulk in one transaction.
-  /// upsertAll() method is faster then saveAll() method. upsertAll() should be used when you are sure that the primary key is greater than zero
-  /// Returns a BoolCommitResult
-  @override
-  Future<BoolCommitResult> upsertAll(List<Community> communities,
-      {bool? exclusive, bool? noResult, bool? continueOnError}) async {
-    final results = await _mnCommunity.rawInsertAll(
-        'INSERT OR REPLACE INTO community (id, baseUrl, name, version)  VALUES (?,?,?,?)',
-        communities,
-        exclusive: exclusive,
-        noResult: noResult,
-        continueOnError: continueOnError);
-    return results;
-  }
-
-  /// Deletes Community
-
-  /// <returns>BoolResult res.success= true (Deleted), false (Could not be deleted)
-  @override
-  Future<BoolResult> delete([bool hardDelete = false]) async {
-    debugPrint('SQFENTITIY: delete Community invoked (id=$id)');
-    var result = BoolResult(success: false);
-    {
-      result = await Setting()
-          .select()
-          ._communityId
-          .equals(id)
-          .and
-          .delete(hardDelete);
-    }
-    if (!result.success) {
-      return result;
-    }
-    {
-      result =
-          await Token().select()._communityId.equals(id).and.delete(hardDelete);
-    }
-    if (!result.success) {
-      return result;
-    }
-    if (!_softDeleteActivated || hardDelete) {
-      return _mnCommunity
-          .delete(QueryParams(whereString: 'id=?', whereArguments: [id]));
-    } else {
-      return _mnCommunity.updateBatch(
-          QueryParams(whereString: 'id=?', whereArguments: [id]),
-          {'isDeleted': 1});
-    }
-  }
-
-  @override
-  Future<BoolResult> recover([bool recoverChilds = true]) {
-    // not implemented because:
-    final msg =
-        'set useSoftDeleting:true in the table definition of [Community] to use this feature';
-    throw UnimplementedError(msg);
-  }
-
-  @override
-  CommunityFilterBuilder select(
-      {List<String>? columnsToSelect, bool? getIsDeleted}) {
-    return CommunityFilterBuilder(this, getIsDeleted)
-      ..qparams.selectColumns = columnsToSelect;
-  }
-
-  @override
-  CommunityFilterBuilder distinct(
-      {List<String>? columnsToSelect, bool? getIsDeleted}) {
-    return CommunityFilterBuilder(this, getIsDeleted)
-      ..qparams.selectColumns = columnsToSelect
-      ..qparams.distinct = true;
-  }
-
-  void _setDefaultValues() {}
-
-  @override
-  void rollbackPk() {
-    if (isInsert == true) {
-      id = null;
-    }
-  }
-
-  // END METHODS
-  // BEGIN CUSTOM CODE
-  /*
-      you can define customCode property of your SqfEntityTable constant. For example:
-      const tablePerson = SqfEntityTable(
-      tableName: 'person',
-      primaryKeyName: 'id',
-      primaryKeyType: PrimaryKeyType.integer_auto_incremental,
-      fields: [
-        SqfEntityField('firstName', DbType.text),
-        SqfEntityField('lastName', DbType.text),
-      ],
-      customCode: '''
-       String fullName()
-       { 
-         return '$firstName $lastName';
-       }
-      ''');
-     */
-  // END CUSTOM CODE
-}
-// endregion community
-
-// region CommunityField
-class CommunityField extends FilterBase {
-  CommunityField(CommunityFilterBuilder communityFB) : super(communityFB);
-
-  @override
-  CommunityFilterBuilder equals(dynamic pValue) {
-    return super.equals(pValue) as CommunityFilterBuilder;
-  }
-
-  @override
-  CommunityFilterBuilder equalsOrNull(dynamic pValue) {
-    return super.equalsOrNull(pValue) as CommunityFilterBuilder;
-  }
-
-  @override
-  CommunityFilterBuilder isNull() {
-    return super.isNull() as CommunityFilterBuilder;
-  }
-
-  @override
-  CommunityFilterBuilder contains(dynamic pValue) {
-    return super.contains(pValue) as CommunityFilterBuilder;
-  }
-
-  @override
-  CommunityFilterBuilder startsWith(dynamic pValue) {
-    return super.startsWith(pValue) as CommunityFilterBuilder;
-  }
-
-  @override
-  CommunityFilterBuilder endsWith(dynamic pValue) {
-    return super.endsWith(pValue) as CommunityFilterBuilder;
-  }
-
-  @override
-  CommunityFilterBuilder between(dynamic pFirst, dynamic pLast) {
-    return super.between(pFirst, pLast) as CommunityFilterBuilder;
-  }
-
-  @override
-  CommunityFilterBuilder greaterThan(dynamic pValue) {
-    return super.greaterThan(pValue) as CommunityFilterBuilder;
-  }
-
-  @override
-  CommunityFilterBuilder lessThan(dynamic pValue) {
-    return super.lessThan(pValue) as CommunityFilterBuilder;
-  }
-
-  @override
-  CommunityFilterBuilder greaterThanOrEquals(dynamic pValue) {
-    return super.greaterThanOrEquals(pValue) as CommunityFilterBuilder;
-  }
-
-  @override
-  CommunityFilterBuilder lessThanOrEquals(dynamic pValue) {
-    return super.lessThanOrEquals(pValue) as CommunityFilterBuilder;
-  }
-
-  @override
-  CommunityFilterBuilder inValues(dynamic pValue) {
-    return super.inValues(pValue) as CommunityFilterBuilder;
-  }
-
-  @override
-  CommunityField get not {
-    return super.not as CommunityField;
-  }
-}
-// endregion CommunityField
-
-// region CommunityFilterBuilder
-class CommunityFilterBuilder extends ConjunctionBase {
-  CommunityFilterBuilder(Community obj, bool? getIsDeleted)
-      : super(obj, getIsDeleted) {
-    _mnCommunity = obj._mnCommunity;
-    _softDeleteActivated = obj.softDeleteActivated;
-  }
-
-  bool _softDeleteActivated = false;
-  CommunityManager? _mnCommunity;
-
-  /// put the sql keyword 'AND'
-  @override
-  CommunityFilterBuilder get and {
-    super.and;
-    return this;
-  }
-
-  /// put the sql keyword 'OR'
-  @override
-  CommunityFilterBuilder get or {
-    super.or;
-    return this;
-  }
-
-  /// open parentheses
-  @override
-  CommunityFilterBuilder get startBlock {
-    super.startBlock;
-    return this;
-  }
-
-  /// String whereCriteria, write raw query without 'where' keyword. Like this: 'field1 like 'test%' and field2 = 3'
-  @override
-  CommunityFilterBuilder where(String? whereCriteria,
-      {dynamic parameterValue}) {
-    super.where(whereCriteria, parameterValue: parameterValue);
-    return this;
-  }
-
-  /// page = page number,
-  /// pagesize = row(s) per page
-  @override
-  CommunityFilterBuilder page(int page, int pagesize) {
-    super.page(page, pagesize);
-    return this;
-  }
-
-  /// int count = LIMIT
-  @override
-  CommunityFilterBuilder top(int count) {
-    super.top(count);
-    return this;
-  }
-
-  /// close parentheses
-  @override
-  CommunityFilterBuilder get endBlock {
-    super.endBlock;
-    return this;
-  }
-
-  /// argFields might be String or List<String>.
-  /// Example 1: argFields='name, date'
-  /// Example 2: argFields = ['name', 'date']
-  @override
-  CommunityFilterBuilder orderBy(dynamic argFields) {
-    super.orderBy(argFields);
-    return this;
-  }
-
-  /// argFields might be String or List<String>.
-  /// Example 1: argFields='field1, field2'
-  /// Example 2: argFields = ['field1', 'field2']
-  @override
-  CommunityFilterBuilder orderByDesc(dynamic argFields) {
-    super.orderByDesc(argFields);
-    return this;
-  }
-
-  /// argFields might be String or List<String>.
-  /// Example 1: argFields='field1, field2'
-  /// Example 2: argFields = ['field1', 'field2']
-  @override
-  CommunityFilterBuilder groupBy(dynamic argFields) {
-    super.groupBy(argFields);
-    return this;
-  }
-
-  /// argFields might be String or List<String>.
-  /// Example 1: argFields='name, date'
-  /// Example 2: argFields = ['name', 'date']
-  @override
-  CommunityFilterBuilder having(dynamic argFields) {
-    super.having(argFields);
-    return this;
-  }
-
-  CommunityField _setField(
-      CommunityField? field, String colName, DbType dbtype) {
-    return CommunityField(this)
-      ..param = DbParameter(
-          dbType: dbtype, columnName: colName, wStartBlock: openedBlock);
-  }
-
-  CommunityField? _id;
-  CommunityField get id {
-    return _id = _setField(_id, 'id', DbType.integer);
-  }
-
-  CommunityField? _baseUrl;
-  CommunityField get baseUrl {
-    return _baseUrl = _setField(_baseUrl, 'baseUrl', DbType.text);
-  }
-
-  CommunityField? _name;
-  CommunityField get name {
-    return _name = _setField(_name, 'name', DbType.text);
-  }
-
-  CommunityField? _version;
-  CommunityField get version {
-    return _version = _setField(_version, 'version', DbType.text);
-  }
-
-  /// Deletes List<Community> bulk by query
-  ///
-  /// <returns>BoolResult res.success= true (Deleted), false (Could not be deleted)
-  @override
-  Future<BoolResult> delete([bool hardDelete = false]) async {
-    buildParameters();
-    var r = BoolResult(success: false);
-    // Delete sub records where in (Setting) according to DeleteRule.CASCADE
-    final idListSettingBY_communityId = toListPrimaryKeySQL(false);
-    final resSettingBY_communityId = await Setting()
-        .select()
-        .where('_communityId IN (${idListSettingBY_communityId['sql']})',
-            parameterValue: idListSettingBY_communityId['args'])
-        .delete(hardDelete);
-    if (!resSettingBY_communityId.success) {
-      return resSettingBY_communityId;
-    }
-// Delete sub records where in (Token) according to DeleteRule.CASCADE
-    final idListTokenBY_communityId = toListPrimaryKeySQL(false);
-    final resTokenBY_communityId = await Token()
-        .select()
-        .where('_communityId IN (${idListTokenBY_communityId['sql']})',
-            parameterValue: idListTokenBY_communityId['args'])
-        .delete(hardDelete);
-    if (!resTokenBY_communityId.success) {
-      return resTokenBY_communityId;
-    }
-
-    if (_softDeleteActivated && !hardDelete) {
-      r = await _mnCommunity!.updateBatch(qparams, {'isDeleted': 1});
-    } else {
-      r = await _mnCommunity!.delete(qparams);
-    }
-    return r;
-  }
-
-  /// using:
-  /// update({'fieldName': Value})
-  /// fieldName must be String. Value is dynamic, it can be any of the (int, bool, String.. )
-  @override
-  Future<BoolResult> update(Map<String, dynamic> values) {
-    buildParameters();
-    if (qparams.limit! > 0 || qparams.offset! > 0) {
-      qparams.whereString =
-          'id IN (SELECT id from community ${qparams.whereString!.isNotEmpty ? 'WHERE ${qparams.whereString}' : ''}${qparams.limit! > 0 ? ' LIMIT ${qparams.limit}' : ''}${qparams.offset! > 0 ? ' OFFSET ${qparams.offset}' : ''})';
-    }
-    return _mnCommunity!.updateBatch(qparams, values);
-  }
-
-  /// This method always returns [Community] Obj if exist, otherwise returns null
-  /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
-  /// ex: toSingle(preload:true) -> Loads all related objects
-  /// List<String> preloadFields: specify the fields you want to preload (preload parameter's value should also be "true")
-  /// ex: toSingle(preload:true, preloadFields:['plField1','plField2'... etc])  -> Loads only certain fields what you specified
-  /// bool loadParents: if true, loads all parent objects until the object has no parent
-
-  /// <returns> Community?
-  @override
-  Future<Community?> toSingle(
-      {bool preload = false,
-      List<String>? preloadFields,
-      bool loadParents = false,
-      List<String>? loadedFields}) async {
-    buildParameters(pSize: 1);
-    final objFuture = _mnCommunity!.toList(qparams);
-    final data = await objFuture;
-    Community? obj;
-    if (data.isNotEmpty) {
-      obj = Community.fromMap(data[0] as Map<String, dynamic>);
-
-//      RELATIONS OneToOne (Community)
-      obj
-        .._setting =
-            await Setting().select()._communityId.equals(obj.id).toSingle()
-        .._token = await Token()
-            .select()
-            ._communityId
-            .equals(obj.id)
-            .toSingle(); //      END RELATIONS OneToOne (Community)
-    } else {
-      obj = null;
-    }
-    return obj;
-  }
-
-  /// This method always returns [Community]
-  /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
-  /// ex: toSingle(preload:true) -> Loads all related objects
-  /// List<String> preloadFields: specify the fields you want to preload (preload parameter's value should also be "true")
-  /// ex: toSingle(preload:true, preloadFields:['plField1','plField2'... etc])  -> Loads only certain fields what you specified
-  /// bool loadParents: if true, loads all parent objects until the object has no parent
-
-  /// <returns> Community?
-  @override
-  Future<Community> toSingleOrDefault(
-      {bool preload = false,
-      List<String>? preloadFields,
-      bool loadParents = false,
-      List<String>? loadedFields}) async {
-    return await toSingle(
-            preload: preload,
-            preloadFields: preloadFields,
-            loadParents: loadParents,
-            loadedFields: loadedFields) ??
-        Community();
-  }
-
-  /// This method returns int. [Community]
-  /// <returns>int
-  @override
-  Future<int> toCount([VoidCallback Function(int c)? communityCount]) async {
-    buildParameters();
-    qparams.selectColumns = ['COUNT(1) AS CNT'];
-    final communitiesFuture = await _mnCommunity!.toList(qparams);
-    final int count = communitiesFuture[0]['CNT'] as int;
-    if (communityCount != null) {
-      communityCount(count);
-    }
-    return count;
-  }
-
-  /// This method returns List<Community> [Community]
-  /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
-  /// ex: toList(preload:true) -> Loads all related objects
-  /// List<String> preloadFields: specify the fields you want to preload (preload parameter's value should also be "true")
-  /// ex: toList(preload:true, preloadFields:['plField1','plField2'... etc])  -> Loads only certain fields what you specified
-  /// bool loadParents: if true, loads all parent objects until the object has no parent
-
-  /// <returns>List<Community>
-  @override
-  Future<List<Community>> toList(
-      {bool preload = false,
-      List<String>? preloadFields,
-      bool loadParents = false,
-      List<String>? loadedFields}) async {
-    final data = await toMapList();
-    final List<Community> communitiesData = await Community.fromMapList(data,
-        preload: preload,
-        preloadFields: preloadFields,
-        loadParents: loadParents,
-        loadedFields: loadedFields,
-        setDefaultValues: qparams.selectColumns == null);
-    return communitiesData;
-  }
-
-  /// This method returns Json String [Community]
-  @override
-  Future<String> toJson() async {
-    final list = <dynamic>[];
-    final data = await toList();
-    for (var o in data) {
-      list.add(o.toMap(forJson: true));
-    }
-    return json.encode(list);
-  }
-
-  /// This method returns Json String. [Community]
-  @override
-  Future<String> toJsonWithChilds() async {
-    final list = <dynamic>[];
-    final data = await toList();
-    for (var o in data) {
-      list.add(await o.toMapWithChildren(false, true));
-    }
-    return json.encode(list);
-  }
-
-  /// This method returns List<dynamic>. [Community]
-  /// <returns>List<dynamic>
-  @override
-  Future<List<dynamic>> toMapList() async {
-    buildParameters();
-    return await _mnCommunity!.toList(qparams);
-  }
-
-  /// Returns List<DropdownMenuItem<Community>>
-  Future<List<DropdownMenuItem<Community>>> toDropDownMenu(
-      String displayTextColumn,
-      [VoidCallback Function(List<DropdownMenuItem<Community>> o)?
-          dropDownMenu]) async {
-    buildParameters();
-    final communitiesFuture = _mnCommunity!.toList(qparams);
-
-    final data = await communitiesFuture;
-    final int count = data.length;
-    final List<DropdownMenuItem<Community>> items = []..add(DropdownMenuItem(
-        value: Community(),
-        child: Text('-'),
-      ));
-    for (int i = 0; i < count; i++) {
-      items.add(
-        DropdownMenuItem(
-          value: Community.fromMap(data[i] as Map<String, dynamic>),
-          child: Text(data[i][displayTextColumn].toString()),
-        ),
-      );
-    }
-    if (dropDownMenu != null) {
-      dropDownMenu(items);
-    }
-    return items;
-  }
-
-  /// Returns List<DropdownMenuItem<int>>
-  Future<List<DropdownMenuItem<int>>> toDropDownMenuInt(
-      String displayTextColumn,
-      [VoidCallback Function(List<DropdownMenuItem<int>> o)?
-          dropDownMenu]) async {
-    buildParameters();
-    qparams.selectColumns = ['id', displayTextColumn];
-    final communitiesFuture = _mnCommunity!.toList(qparams);
-
-    final data = await communitiesFuture;
-    final int count = data.length;
-    final List<DropdownMenuItem<int>> items = []..add(DropdownMenuItem(
-        value: 0,
-        child: Text('-'),
-      ));
-    for (int i = 0; i < count; i++) {
-      items.add(
-        DropdownMenuItem(
-          value: data[i]['id'] as int,
-          child: Text(data[i][displayTextColumn].toString()),
-        ),
-      );
-    }
-    if (dropDownMenu != null) {
-      dropDownMenu(items);
-    }
-    return items;
-  }
-
-  /// This method returns Primary Key List SQL and Parameters retVal = Map<String,dynamic>. [Community]
-  /// retVal['sql'] = SQL statement string, retVal['args'] = whereArguments List<dynamic>;
-  /// <returns>List<String>
-  @override
-  Map<String, dynamic> toListPrimaryKeySQL([bool buildParams = true]) {
-    final Map<String, dynamic> _retVal = <String, dynamic>{};
-    if (buildParams) {
-      buildParameters();
-    }
-    _retVal['sql'] = 'SELECT `id` FROM community WHERE ${qparams.whereString}';
-    _retVal['args'] = qparams.whereArguments;
-    return _retVal;
-  }
-
-  /// This method returns Primary Key List<int>.
-  /// <returns>List<int>
-  @override
-  Future<List<int>> toListPrimaryKey([bool buildParams = true]) async {
-    if (buildParams) {
-      buildParameters();
-    }
-    final List<int> idData = <int>[];
-    qparams.selectColumns = ['id'];
-    final idFuture = await _mnCommunity!.toList(qparams);
-
-    final int count = idFuture.length;
-    for (int i = 0; i < count; i++) {
-      idData.add(idFuture[i]['id'] as int);
-    }
-    return idData;
-  }
-
-  /// Returns List<dynamic> for selected columns. Use this method for 'groupBy' with min,max,avg..  [Community]
-  /// Sample usage: (see EXAMPLE 4.2 at https://github.com/hhtokpinar/sqfEntity#group-by)
-  @override
-  Future<List<dynamic>> toListObject() async {
-    buildParameters();
-
-    final objectFuture = _mnCommunity!.toList(qparams);
-
-    final List<dynamic> objectsData = <dynamic>[];
-    final data = await objectFuture;
-    final int count = data.length;
-    for (int i = 0; i < count; i++) {
-      objectsData.add(data[i]);
-    }
-    return objectsData;
-  }
-
-  /// Returns List<String> for selected first column
-  /// Sample usage: await Community.select(columnsToSelect: ['columnName']).toListString()
-  @override
-  Future<List<String>> toListString(
-      [VoidCallback Function(List<String> o)? listString]) async {
-    buildParameters();
-
-    final objectFuture = _mnCommunity!.toList(qparams);
-
-    final List<String> objectsData = <String>[];
-    final data = await objectFuture;
-    final int count = data.length;
-    for (int i = 0; i < count; i++) {
-      objectsData.add(data[i][qparams.selectColumns![0]].toString());
-    }
-    if (listString != null) {
-      listString(objectsData);
-    }
-    return objectsData;
-  }
-}
-// endregion CommunityFilterBuilder
-
-// region CommunityFields
-class CommunityFields {
-  static TableField? _fId;
-  static TableField get id {
-    return _fId = _fId ?? SqlSyntax.setField(_fId, 'id', DbType.integer);
-  }
-
-  static TableField? _fBaseUrl;
-  static TableField get baseUrl {
-    return _fBaseUrl =
-        _fBaseUrl ?? SqlSyntax.setField(_fBaseUrl, 'baseUrl', DbType.text);
-  }
-
-  static TableField? _fName;
-  static TableField get name {
-    return _fName = _fName ?? SqlSyntax.setField(_fName, 'name', DbType.text);
-  }
-
-  static TableField? _fVersion;
-  static TableField get version {
-    return _fVersion =
-        _fVersion ?? SqlSyntax.setField(_fVersion, 'version', DbType.text);
-  }
-}
-// endregion CommunityFields
-
-//region CommunityManager
-class CommunityManager extends SqfEntityProvider {
-  CommunityManager()
-      : super(VcareDbModel(),
-            tableName: _tableName,
-            primaryKeyList: _primaryKeyList,
-            whereStr: _whereStr);
-  static const String _tableName = 'community';
-  static const List<String> _primaryKeyList = ['id'];
-  static const String _whereStr = 'id=?';
-}
-
-//endregion CommunityManager
-// region Setting
-class Setting extends TableBase {
-  Setting({this.isDark, this.themeId}) {
-    _setDefaultValues();
-    softDeleteActivated = false;
-  }
-  Setting.withFields(this.isDark, this.themeId, this._communityId) {
-    _setDefaultValues();
-  }
-  Setting.withId(this.isDark, this.themeId, this._communityId) {
-    _setDefaultValues();
-  }
-  // fromMap v2.0
-  Setting.fromMap(Map<String, dynamic> o, {bool setDefaultValues = true}) {
-    if (setDefaultValues) {
-      _setDefaultValues();
-    }
-    id = int.tryParse(o['id'].toString());
     if (o['isDark'] != null) {
       isDark =
           o['isDark'].toString() == '1' || o['isDark'].toString() == 'true';
     }
     themeId = int.tryParse(o['themeId'].toString());
-
-    _communityId = int.tryParse(o['_communityId'].toString());
 
     // RELATIONSHIPS FromMAP
     plTheme = o['theme'] != null
@@ -1176,9 +180,11 @@ class Setting extends TableBase {
   }
   // FIELDS (Setting)
   int? id;
+  String? baseUrl;
+  String? name;
+  String? version;
   bool? isDark;
   int? themeId;
-  int? _communityId;
 
   // end FIELDS (Setting)
 
@@ -1196,6 +202,18 @@ class Setting extends TableBase {
   }
   // END RELATIONSHIPS (Setting)
 
+// COLLECTIONS & VIRTUALS (Setting)
+  Token? _token;
+  Token get token {
+    return _token = _token ?? Token();
+  }
+
+  set token(Token token) {
+    _token = token;
+  }
+
+// END COLLECTIONS & VIRTUALS (Setting)
+
   static const bool _softDeleteActivated = false;
   SettingManager? __mnSetting;
 
@@ -1208,6 +226,16 @@ class Setting extends TableBase {
   Map<String, dynamic> toMap(
       {bool forQuery = false, bool forJson = false, bool forView = false}) {
     final map = <String, dynamic>{};
+    map['id'] = id;
+    if (baseUrl != null || !forView) {
+      map['baseUrl'] = baseUrl;
+    }
+    if (name != null || !forView) {
+      map['name'] = name;
+    }
+    if (version != null || !forView) {
+      map['version'] = version;
+    }
     if (isDark != null) {
       map['isDark'] = forQuery ? (isDark! ? 1 : 0) : isDark;
     } else if (isDark != null || !forView) {
@@ -1222,7 +250,6 @@ class Setting extends TableBase {
     } else if (themeId != null || !forView) {
       map['themeId'] = null;
     }
-    map['_communityId'] = _communityId;
 
     return map;
   }
@@ -1233,6 +260,16 @@ class Setting extends TableBase {
       bool forJson = false,
       bool forView = false]) async {
     final map = <String, dynamic>{};
+    map['id'] = id;
+    if (baseUrl != null || !forView) {
+      map['baseUrl'] = baseUrl;
+    }
+    if (name != null || !forView) {
+      map['name'] = name;
+    }
+    if (version != null || !forView) {
+      map['version'] = version;
+    }
     if (isDark != null) {
       map['isDark'] = forQuery ? (isDark! ? 1 : 0) : isDark;
     } else if (isDark != null || !forView) {
@@ -1247,7 +284,12 @@ class Setting extends TableBase {
     } else if (themeId != null || !forView) {
       map['themeId'] = null;
     }
-    map['_communityId'] = _communityId;
+
+// COLLECTIONS (Setting)
+    if (!forQuery) {
+      map['token'] = await token.toMapWithChildren();
+    }
+// END COLLECTIONS (Setting)
 
     return map;
   }
@@ -1266,12 +308,12 @@ class Setting extends TableBase {
 
   @override
   List<dynamic> toArgs() {
-    return [isDark, themeId, _communityId];
+    return [baseUrl, name, version, isDark, themeId];
   }
 
   @override
   List<dynamic> toArgsWithIds() {
-    return [isDark, themeId, _communityId];
+    return [id, baseUrl, name, version, isDark, themeId];
   }
 
   static Future<List<Setting>?> fromWebUrl(Uri uri,
@@ -1317,6 +359,13 @@ class Setting extends TableBase {
           setDefaultValues: setDefaultValues);
       // final List<String> _loadedFields = List<String>.from(loadedFields);
 
+//      RELATIONS OneToOne (Setting)
+      obj._token = await Token()
+          .select()
+          ._settingId
+          .equals(obj.id)
+          .toSingle(); //      END RELATIONS OneToOne (Setting)
+
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
         loadedFields = loadedFields ?? [];
@@ -1355,6 +404,13 @@ class Setting extends TableBase {
     if (data.length != 0) {
       obj = Setting.fromMap(data[0] as Map<String, dynamic>);
 
+//      RELATIONS OneToOne (Setting)
+      obj._token = await Token()
+          .select()
+          ._settingId
+          .equals(obj.id)
+          .toSingle(); //      END RELATIONS OneToOne (Setting)
+
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
         loadedFields = loadedFields ?? [];
@@ -1375,12 +431,17 @@ class Setting extends TableBase {
   /// ignoreBatch = true as a default. Set ignoreBatch to false if you run more than one save() operation those are between batchStart and batchCommit
   /// <returns>Returns id
   @override
-  Future<int?> _save({bool ignoreBatch = true}) async {
+  Future<int?> save({bool ignoreBatch = true}) async {
     if (id == null || id == 0) {
       id = await _mnSetting.insert(this, ignoreBatch);
     } else {
       await _mnSetting.update(this);
     }
+
+// save() OneToOne relations (Setting)
+    _token?._settingId = id;
+    await _token?._save();
+// END save() OneToOne relations (Setting)
 
     return id;
   }
@@ -1389,7 +450,7 @@ class Setting extends TableBase {
   /// ignoreBatch = true as a default. Set ignoreBatch to false if you run more than one save() operation those are between batchStart and batchCommit
   /// <returns>Returns id
   @override
-  Future<int?> _saveOrThrow({bool ignoreBatch = true}) async {
+  Future<int?> saveOrThrow({bool ignoreBatch = true}) async {
     if (id == null || id == 0) {
       id = await _mnSetting.insertOrThrow(this, ignoreBatch);
 
@@ -1399,7 +460,50 @@ class Setting extends TableBase {
       await _mnSetting.updateOrThrow(this);
     }
 
+// save() OneToOne relations (Setting)
+    _token?._settingId = id;
+    await _token?._save();
+// END save() OneToOne relations (Setting)
+
     return id;
+  }
+
+  /// saveAs Setting. Returns a new Primary Key value of Setting
+
+  /// <returns>Returns a new Primary Key value of Setting
+  @override
+  Future<int?> saveAs({bool ignoreBatch = true}) async {
+    id = null;
+
+// saveAs() OneToOne relations (Setting)
+    token.id = null;
+// END saveAs() OneToOne relations (Setting)
+
+    return save(ignoreBatch: ignoreBatch);
+  }
+
+  /// saveAll method saves the sent List<Setting> as a bulk in one transaction
+  /// Returns a <List<BoolResult>>
+  static Future<List<dynamic>> saveAll(List<Setting> settings,
+      {bool? exclusive, bool? noResult, bool? continueOnError}) async {
+    List<dynamic>? result = [];
+    // If there is no open transaction, start one
+    final isStartedBatch = await VcareDbModel().batchStart();
+    for (final obj in settings) {
+      await obj.save(ignoreBatch: false);
+    }
+    if (!isStartedBatch) {
+      result = await VcareDbModel().batchCommit(
+          exclusive: exclusive,
+          noResult: noResult,
+          continueOnError: continueOnError);
+      for (int i = 0; i < settings.length; i++) {
+        if (settings[i].id == null) {
+          settings[i].id = result![i] as int;
+        }
+      }
+    }
+    return result!;
   }
 
   /// Updates if the record exists, otherwise adds a new row
@@ -1408,8 +512,8 @@ class Setting extends TableBase {
   Future<int?> upsert({bool ignoreBatch = true}) async {
     try {
       final result = await _mnSetting.rawInsert(
-          'INSERT OR REPLACE INTO settings ( isDark, themeId, _communityId)  VALUES (?,?,?)',
-          [isDark, themeId, _communityId],
+          'INSERT OR REPLACE INTO setting (id, baseUrl, name, version, isDark, themeId)  VALUES (?,?,?,?,?,?)',
+          [id, baseUrl, name, version, isDark, themeId],
           ignoreBatch);
       if (result! > 0) {
         saveResult = BoolResult(
@@ -1428,12 +532,35 @@ class Setting extends TableBase {
     }
   }
 
+  /// inserts or replaces the sent List<<Setting>> as a bulk in one transaction.
+  /// upsertAll() method is faster then saveAll() method. upsertAll() should be used when you are sure that the primary key is greater than zero
+  /// Returns a BoolCommitResult
+  @override
+  Future<BoolCommitResult> upsertAll(List<Setting> settings,
+      {bool? exclusive, bool? noResult, bool? continueOnError}) async {
+    final results = await _mnSetting.rawInsertAll(
+        'INSERT OR REPLACE INTO setting (id, baseUrl, name, version, isDark, themeId)  VALUES (?,?,?,?,?,?)',
+        settings,
+        exclusive: exclusive,
+        noResult: noResult,
+        continueOnError: continueOnError);
+    return results;
+  }
+
   /// Deletes Setting
 
   /// <returns>BoolResult res.success= true (Deleted), false (Could not be deleted)
   @override
   Future<BoolResult> delete([bool hardDelete = false]) async {
     debugPrint('SQFENTITIY: delete Setting invoked (id=$id)');
+    var result = BoolResult(success: false);
+    {
+      result =
+          await Token().select()._settingId.equals(id).and.delete(hardDelete);
+    }
+    if (!result.success) {
+      return result;
+    }
     if (!_softDeleteActivated || hardDelete) {
       return _mnSetting
           .delete(QueryParams(whereString: 'id=?', whereArguments: [id]));
@@ -1468,7 +595,7 @@ class Setting extends TableBase {
   }
 
   void _setDefaultValues() {
-    isDark = isDark ?? false;
+    isDark = isDark ?? true;
   }
 
   @override
@@ -1680,6 +807,21 @@ class SettingFilterBuilder extends ConjunctionBase {
     return _id = _setField(_id, 'id', DbType.integer);
   }
 
+  SettingField? _baseUrl;
+  SettingField get baseUrl {
+    return _baseUrl = _setField(_baseUrl, 'baseUrl', DbType.text);
+  }
+
+  SettingField? _name;
+  SettingField get name {
+    return _name = _setField(_name, 'name', DbType.text);
+  }
+
+  SettingField? _version;
+  SettingField get version {
+    return _version = _setField(_version, 'version', DbType.text);
+  }
+
   SettingField? _isDark;
   SettingField get isDark {
     return _isDark = _setField(_isDark, 'isDark', DbType.bool);
@@ -1690,12 +832,6 @@ class SettingFilterBuilder extends ConjunctionBase {
     return _themeId = _setField(_themeId, 'themeId', DbType.integer);
   }
 
-  SettingField? __communityId;
-  SettingField get _communityId {
-    return __communityId =
-        _setField(__communityId, '_communityId', DbType.integer);
-  }
-
   /// Deletes List<Setting> bulk by query
   ///
   /// <returns>BoolResult res.success= true (Deleted), false (Could not be deleted)
@@ -1703,6 +839,16 @@ class SettingFilterBuilder extends ConjunctionBase {
   Future<BoolResult> delete([bool hardDelete = false]) async {
     buildParameters();
     var r = BoolResult(success: false);
+    // Delete sub records where in (Token) according to DeleteRule.CASCADE
+    final idListTokenBY_settingId = toListPrimaryKeySQL(false);
+    final resTokenBY_settingId = await Token()
+        .select()
+        .where('_settingId IN (${idListTokenBY_settingId['sql']})',
+            parameterValue: idListTokenBY_settingId['args'])
+        .delete(hardDelete);
+    if (!resTokenBY_settingId.success) {
+      return resTokenBY_settingId;
+    }
 
     if (_softDeleteActivated && !hardDelete) {
       r = await _mnSetting!.updateBatch(qparams, {'isDeleted': 1});
@@ -1720,7 +866,7 @@ class SettingFilterBuilder extends ConjunctionBase {
     buildParameters();
     if (qparams.limit! > 0 || qparams.offset! > 0) {
       qparams.whereString =
-          'id IN (SELECT id from settings ${qparams.whereString!.isNotEmpty ? 'WHERE ${qparams.whereString}' : ''}${qparams.limit! > 0 ? ' LIMIT ${qparams.limit}' : ''}${qparams.offset! > 0 ? ' OFFSET ${qparams.offset}' : ''})';
+          'id IN (SELECT id from setting ${qparams.whereString!.isNotEmpty ? 'WHERE ${qparams.whereString}' : ''}${qparams.limit! > 0 ? ' LIMIT ${qparams.limit}' : ''}${qparams.offset! > 0 ? ' OFFSET ${qparams.offset}' : ''})';
     }
     return _mnSetting!.updateBatch(qparams, values);
   }
@@ -1745,6 +891,13 @@ class SettingFilterBuilder extends ConjunctionBase {
     Setting? obj;
     if (data.isNotEmpty) {
       obj = Setting.fromMap(data[0] as Map<String, dynamic>);
+
+//      RELATIONS OneToOne (Setting)
+      obj._token = await Token()
+          .select()
+          ._settingId
+          .equals(obj.id)
+          .toSingle(); //      END RELATIONS OneToOne (Setting)
 
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
@@ -1918,7 +1071,7 @@ class SettingFilterBuilder extends ConjunctionBase {
     if (buildParams) {
       buildParameters();
     }
-    _retVal['sql'] = 'SELECT `id` FROM settings WHERE ${qparams.whereString}';
+    _retVal['sql'] = 'SELECT `id` FROM setting WHERE ${qparams.whereString}';
     _retVal['args'] = qparams.whereArguments;
     return _retVal;
   }
@@ -1988,6 +1141,23 @@ class SettingFields {
     return _fId = _fId ?? SqlSyntax.setField(_fId, 'id', DbType.integer);
   }
 
+  static TableField? _fBaseUrl;
+  static TableField get baseUrl {
+    return _fBaseUrl =
+        _fBaseUrl ?? SqlSyntax.setField(_fBaseUrl, 'baseUrl', DbType.text);
+  }
+
+  static TableField? _fName;
+  static TableField get name {
+    return _fName = _fName ?? SqlSyntax.setField(_fName, 'name', DbType.text);
+  }
+
+  static TableField? _fVersion;
+  static TableField get version {
+    return _fVersion =
+        _fVersion ?? SqlSyntax.setField(_fVersion, 'version', DbType.text);
+  }
+
   static TableField? _fIsDark;
   static TableField get isDark {
     return _fIsDark =
@@ -2009,7 +1179,7 @@ class SettingManager extends SqfEntityProvider {
             tableName: _tableName,
             primaryKeyList: _primaryKeyList,
             whereStr: _whereStr);
-  static const String _tableName = 'settings';
+  static const String _tableName = 'setting';
   static const List<String> _primaryKeyList = ['id'];
   static const String _whereStr = 'id=?';
 }
@@ -2949,10 +2119,10 @@ class Token extends TableBase {
     _setDefaultValues();
     softDeleteActivated = false;
   }
-  Token.withFields(this.token, this.refreshToken, this._communityId) {
+  Token.withFields(this.token, this.refreshToken, this._settingId) {
     _setDefaultValues();
   }
-  Token.withId(this.token, this.refreshToken, this._communityId) {
+  Token.withId(this.token, this.refreshToken, this._settingId) {
     _setDefaultValues();
   }
   // fromMap v2.0
@@ -2967,13 +2137,13 @@ class Token extends TableBase {
     if (o['refreshToken'] != null) {
       refreshToken = o['refreshToken'].toString();
     }
-    _communityId = int.tryParse(o['_communityId'].toString());
+    _settingId = int.tryParse(o['_settingId'].toString());
   }
   // FIELDS (Token)
   int? id;
   String? token;
   String? refreshToken;
-  int? _communityId;
+  int? _settingId;
 
   // end FIELDS (Token)
 
@@ -2995,7 +2165,7 @@ class Token extends TableBase {
     if (refreshToken != null || !forView) {
       map['refreshToken'] = refreshToken;
     }
-    map['_communityId'] = _communityId;
+    map['_settingId'] = _settingId;
 
     return map;
   }
@@ -3012,7 +2182,7 @@ class Token extends TableBase {
     if (refreshToken != null || !forView) {
       map['refreshToken'] = refreshToken;
     }
-    map['_communityId'] = _communityId;
+    map['_settingId'] = _settingId;
 
     return map;
   }
@@ -3031,12 +2201,12 @@ class Token extends TableBase {
 
   @override
   List<dynamic> toArgs() {
-    return [token, refreshToken, _communityId];
+    return [token, refreshToken, _settingId];
   }
 
   @override
   List<dynamic> toArgsWithIds() {
-    return [token, refreshToken, _communityId];
+    return [token, refreshToken, _settingId];
   }
 
   static Future<List<Token>?> fromWebUrl(Uri uri,
@@ -3150,8 +2320,8 @@ class Token extends TableBase {
   Future<int?> upsert({bool ignoreBatch = true}) async {
     try {
       final result = await _mnToken.rawInsert(
-          'INSERT OR REPLACE INTO token ( token, refreshToken, _communityId)  VALUES (?,?,?)',
-          [token, refreshToken, _communityId],
+          'INSERT OR REPLACE INTO token ( token, refreshToken, _settingId)  VALUES (?,?,?)',
+          [token, refreshToken, _settingId],
           ignoreBatch);
       if (result! > 0) {
         saveResult = BoolResult(
@@ -3429,10 +2599,9 @@ class TokenFilterBuilder extends ConjunctionBase {
         _setField(_refreshToken, 'refreshToken', DbType.text);
   }
 
-  TokenField? __communityId;
-  TokenField get _communityId {
-    return __communityId =
-        _setField(__communityId, '_communityId', DbType.integer);
+  TokenField? __settingId;
+  TokenField get _settingId {
+    return __settingId = _setField(__settingId, '_settingId', DbType.integer);
   }
 
   /// Deletes List<Token> bulk by query
@@ -3748,82 +2917,18 @@ class VcareDbModelSequenceManager extends SqfEntityProvider {
 // END OF ENTITIES
 
 // BEGIN CONTROLLERS
-// BEGIN CONTROLLER (Community)
-class CommunityToSettingControllerSub extends SettingController {
-  static String relationshipFieldName = '_communityId';
-  static String primaryKeyName = 'id';
-  static bool useSoftDeleting = false;
-  //static String formListTitleField = 'baseUrl';
-  //static String formListSubTitleField = 'name';
-}
-
-class CommunityToTokenControllerSub extends TokenController {
-  static String relationshipFieldName = '_communityId';
-  static String primaryKeyName = 'id';
-  static bool useSoftDeleting = false;
-  //static String formListTitleField = 'baseUrl';
-  //static String formListSubTitleField = 'name';
-}
-
-class CommunityController extends Community {
-  String formListTitleField = 'baseUrl';
-  String formListSubTitleField = 'name';
-  static SQFViewList getController = SQFViewList(
-    CommunityController(),
-    primaryKeyName: 'id',
-    useSoftDeleting: false,
-  );
-  Map<String, String> subMenu() {
-    final menu = <String, String>{};
-    menu['CommunityToSetting'] = 'Community To Setting(_communityId)';
-    menu['CommunityToToken'] = 'Community To Token(_communityId)';
-
-    return menu;
-  }
-
-  SQFViewList? subList(int id, String controllerName) {
-    switch (controllerName) {
-      case 'CommunityToSetting':
-        return SQFViewList(
-          CommunityToSettingControllerSub(),
-          primaryKeyName: CommunityToSettingControllerSub.primaryKeyName,
-          useSoftDeleting: CommunityToSettingControllerSub.useSoftDeleting,
-          //formListTitleField: 'baseUrl',
-          //formListSubTitleField: 'name',
-          filterExpression:
-              '${CommunityToSettingControllerSub.relationshipFieldName}=?',
-          filterParameter: id,
-        );
-      case 'CommunityToToken':
-        return SQFViewList(
-          CommunityToTokenControllerSub(),
-          primaryKeyName: CommunityToTokenControllerSub.primaryKeyName,
-          useSoftDeleting: CommunityToTokenControllerSub.useSoftDeleting,
-          //formListTitleField: 'baseUrl',
-          //formListSubTitleField: 'name',
-          filterExpression:
-              '${CommunityToTokenControllerSub.relationshipFieldName}=?',
-          filterParameter: id,
-        );
-
-      default:
-        return null;
-    }
-  }
-
-  Future<Widget> gotoEdit(dynamic obj) async {
-    return CommunityAdd(obj == null
-        ? Community()
-        : await Community().getById(obj['id'] as int) ?? Community());
-  }
-}
-// END CONTROLLER (Community)
-
 // BEGIN CONTROLLER (Setting)
+class SettingToTokenControllerSub extends TokenController {
+  static String relationshipFieldName = '_settingId';
+  static String primaryKeyName = 'id';
+  static bool useSoftDeleting = false;
+  //static String formListTitleField = 'baseUrl';
+  //static String formListSubTitleField = 'name';
+}
 
 class SettingController extends Setting {
-  String formListTitleField = 'id';
-  String formListSubTitleField = 'isDark';
+  String formListTitleField = 'baseUrl';
+  String formListSubTitleField = 'name';
   static SQFViewList getController = SQFViewList(
     SettingController(),
     primaryKeyName: 'id',
@@ -3831,8 +2936,28 @@ class SettingController extends Setting {
   );
   Map<String, String> subMenu() {
     final menu = <String, String>{};
+    menu['SettingToToken'] = 'Setting To Token(_settingId)';
 
     return menu;
+  }
+
+  SQFViewList? subList(int id, String controllerName) {
+    switch (controllerName) {
+      case 'SettingToToken':
+        return SQFViewList(
+          SettingToTokenControllerSub(),
+          primaryKeyName: SettingToTokenControllerSub.primaryKeyName,
+          useSoftDeleting: SettingToTokenControllerSub.useSoftDeleting,
+          //formListTitleField: 'baseUrl',
+          //formListSubTitleField: 'name',
+          filterExpression:
+              '${SettingToTokenControllerSub.relationshipFieldName}=?',
+          filterParameter: id,
+        );
+
+      default:
+        return null;
+    }
   }
 
   Future<Widget> gotoEdit(dynamic obj) async {

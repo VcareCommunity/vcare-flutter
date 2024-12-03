@@ -6,40 +6,59 @@
 
 part of 'model.dart';
 
-class CommunityAdd extends StatefulWidget {
-  CommunityAdd(this._community);
-  final dynamic _community;
+class SettingAdd extends StatefulWidget {
+  SettingAdd(this._setting);
+  final dynamic _setting;
   @override
-  State<StatefulWidget> createState() =>
-      CommunityAddState(_community as Community);
+  State<StatefulWidget> createState() => SettingAddState(_setting as Setting);
 }
 
-class CommunityAddState extends State {
-  CommunityAddState(this.community);
-  Community community;
+class SettingAddState extends State {
+  SettingAddState(this.setting);
+  Setting setting;
   final _formKey = GlobalKey<FormState>();
   final TextEditingController txtBaseUrl = TextEditingController();
   final TextEditingController txtName = TextEditingController();
   final TextEditingController txtVersion = TextEditingController();
 
+  List<DropdownMenuItem<int>> _dropdownMenuItemsForThemeId =
+      <DropdownMenuItem<int>>[];
+  int? _selectedThemeId;
+
   @override
   void initState() {
-    txtBaseUrl.text =
-        community.baseUrl == null ? '' : community.baseUrl.toString();
-    txtName.text = community.name == null ? '' : community.name.toString();
-    txtVersion.text =
-        community.version == null ? '' : community.version.toString();
+    txtBaseUrl.text = setting.baseUrl == null ? '' : setting.baseUrl.toString();
+    txtName.text = setting.name == null ? '' : setting.name.toString();
+    txtVersion.text = setting.version == null ? '' : setting.version.toString();
 
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    void buildDropDownMenuForThemeId() async {
+      final dropdownMenuItems =
+          await Theme().select().toDropDownMenuInt('name');
+      setState(() {
+        _dropdownMenuItemsForThemeId = dropdownMenuItems;
+        _selectedThemeId = setting.themeId;
+      });
+    }
+
+    if (_dropdownMenuItemsForThemeId.isEmpty) {
+      buildDropDownMenuForThemeId();
+    }
+    void onChangeDropdownItemForThemeId(int? selectedThemeId) {
+      setState(() {
+        _selectedThemeId = selectedThemeId;
+      });
+    }
+
     return Scaffold(
       appBar: AppBar(
-        title: (community.id == null)
-            ? Text('Add a new community')
-            : Text('Edit community'),
+        title: (setting.id == null)
+            ? Text('Add a new setting')
+            : Text('Edit setting'),
       ),
       body: Container(
         alignment: Alignment.topCenter,
@@ -55,6 +74,8 @@ class CommunityAddState extends State {
                     buildRowBaseUrl(),
                     buildRowName(),
                     buildRowVersion(),
+                    buildRowIsDark(),
+                    buildRowThemeId(onChangeDropdownItemForThemeId),
                     TextButton(
                       child: saveButton(),
                       onPressed: () {
@@ -115,125 +136,15 @@ class CommunityAddState extends State {
     );
   }
 
-  Container saveButton() {
-    return Container(
-      padding: const EdgeInsets.all(7.0),
-      decoration: BoxDecoration(
-          color: Color.fromRGBO(95, 66, 119, 1.0),
-          border: Border.all(color: Colors.black),
-          borderRadius: BorderRadius.circular(5.0)),
-      child: Text(
-        'Save',
-        style: TextStyle(color: Colors.white, fontSize: 20),
-      ),
-    );
-  }
-
-  void save() async {
-    community
-      ..baseUrl = txtBaseUrl.text
-      ..name = txtName.text
-      ..version = txtVersion.text;
-    await community.save();
-    if (community.saveResult!.success) {
-      Navigator.pop(context, true);
-    } else {
-      UITools(context).alertDialog(community.saveResult.toString(),
-          title: 'save Community Failed!', callBack: () {});
-    }
-  }
-}
-
-class SettingAdd extends StatefulWidget {
-  SettingAdd(this._settings);
-  final dynamic _settings;
-  @override
-  State<StatefulWidget> createState() => SettingAddState(_settings as Setting);
-}
-
-class SettingAddState extends State {
-  SettingAddState(this.settings);
-  Setting settings;
-  final _formKey = GlobalKey<FormState>();
-
-  List<DropdownMenuItem<int>> _dropdownMenuItemsForThemeId =
-      <DropdownMenuItem<int>>[];
-  int? _selectedThemeId;
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    void buildDropDownMenuForThemeId() async {
-      final dropdownMenuItems =
-          await Theme().select().toDropDownMenuInt('name');
-      setState(() {
-        _dropdownMenuItemsForThemeId = dropdownMenuItems;
-        _selectedThemeId = settings.themeId;
-      });
-    }
-
-    if (_dropdownMenuItemsForThemeId.isEmpty) {
-      buildDropDownMenuForThemeId();
-    }
-    void onChangeDropdownItemForThemeId(int? selectedThemeId) {
-      setState(() {
-        _selectedThemeId = selectedThemeId;
-      });
-    }
-
-    return Scaffold(
-      appBar: AppBar(
-        title: (settings.id == null)
-            ? Text('Add a new settings')
-            : Text('Edit settings'),
-      ),
-      body: Container(
-        alignment: Alignment.topCenter,
-        width: double.infinity,
-        height: double.infinity,
-        child: SingleChildScrollView(
-          child: Padding(
-              padding: EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  children: <Widget>[
-                    buildRowIsDark(),
-                    buildRowThemeId(onChangeDropdownItemForThemeId),
-                    TextButton(
-                      child: saveButton(),
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          // If the form is valid, display a Snackbar.
-                          save();
-                          /* Scaffold.of(context).showSnackBar(SnackBar(
-                              duration: Duration(seconds: 2),
-                              content: Text('Processing Data')));
-                           */
-                        }
-                      },
-                    )
-                  ],
-                ),
-              )),
-        ),
-      ),
-    );
-  }
-
   Widget buildRowIsDark() {
     return Row(
       children: <Widget>[
         Text('IsDark?'),
         Checkbox(
-          value: settings.isDark ?? false,
+          value: setting.isDark ?? false,
           onChanged: (bool? value) {
             setState(() {
-              settings.isDark = value;
+              setting.isDark = value;
             });
           },
         ),
@@ -280,12 +191,16 @@ class SettingAddState extends State {
   }
 
   void save() async {
-    settings.themeId = _selectedThemeId;
-    await settings._save();
-    if (settings.saveResult!.success) {
+    setting
+      ..baseUrl = txtBaseUrl.text
+      ..name = txtName.text
+      ..version = txtVersion.text
+      ..themeId = _selectedThemeId;
+    await setting.save();
+    if (setting.saveResult!.success) {
       Navigator.pop(context, true);
     } else {
-      UITools(context).alertDialog(settings.saveResult.toString(),
+      UITools(context).alertDialog(setting.saveResult.toString(),
           title: 'save Setting Failed!', callBack: () {});
     }
   }

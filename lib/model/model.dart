@@ -12,35 +12,22 @@ part 'model.g.dart';
 
 part 'model.g.view.dart';
 
-///社区表
-const SqfEntityTable tableCommunity = SqfEntityTable(
-    tableName: "community",
+///配置表
+const SqfEntityTable tableSetting = SqfEntityTable(
+    tableName: "setting",
     primaryKeyName: "id",
     primaryKeyType: PrimaryKeyType.integer_auto_incremental,
     useSoftDeleting: false,
     fields: [
       SqfEntityField("baseUrl", DbType.text, isNotNull: true, isUnique: true),
       SqfEntityField("name", DbType.text, isNotNull: true),
-      SqfEntityField("version", DbType.text, isNotNull: true)
-    ]);
-
-///配置表
-const SqfEntityTable tableSettings = SqfEntityTable(
-    tableName: "settings",
-    primaryKeyName: "id",
-    primaryKeyType: PrimaryKeyType.integer_auto_incremental,
-    useSoftDeleting: false,
-    fields: [
+      SqfEntityField("version", DbType.text, isNotNull: true),
       SqfEntityField("isDark", DbType.bool,
           isNotNull: true, defaultValue: false),
       SqfEntityFieldRelationship(
           parentTable: tableTheme,
           relationType: RelationType.ONE_TO_MANY,
           deleteRule: DeleteRule.CASCADE),
-      SqfEntityFieldRelationship(
-          parentTable: tableCommunity,
-          relationType: RelationType.ONE_TO_ONE,
-          deleteRule: DeleteRule.CASCADE)
     ]);
 
 ///主题表
@@ -64,7 +51,7 @@ const SqfEntityTable tableToken = SqfEntityTable(
       SqfEntityField("token", DbType.text, isNotNull: true),
       SqfEntityField("refreshToken", DbType.text),
       SqfEntityFieldRelationship(
-          parentTable: tableCommunity,
+          parentTable: tableSetting,
           relationType: RelationType.ONE_TO_ONE,
           deleteRule: DeleteRule.CASCADE)
     ]);
@@ -74,6 +61,6 @@ const SqfEntityModel vcareDbModel = SqfEntityModel(
   modelName: "vcareDbModel",
   databaseName: 'vcare.sqlite',
   password: null,
-  databaseTables: [tableCommunity, tableSettings, tableTheme, tableToken],
-  formTables: [tableCommunity, tableSettings, tableTheme, tableToken],
+  databaseTables: [tableSetting, tableTheme, tableToken],
+  formTables: [tableSetting, tableTheme, tableToken],
 );

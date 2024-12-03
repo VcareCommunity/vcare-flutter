@@ -30,7 +30,11 @@ class MaterialWeight extends StatelessWidget {
     var theme = ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
-            seedColor: Color(defaultThemeList[0].themeColor!)));
+            seedColor: Color(defaultThemeList[0].themeColor!)),
+        brightness: state.setting.isDark! ? Brightness.dark : Brightness.light,
+        fontFamily: "HarmonyOS");
+
+
 
     var materialApp = MaterialApp(
         onGenerateTitle: (context) => AppLocalizations.of(context)!.appName,
@@ -39,7 +43,8 @@ class MaterialWeight extends StatelessWidget {
         theme: theme,
         home: Scaffold(
           body: Container(
-            child: Text("${state.communityCount}"),
+            child: Text("setting: ${state.setting.toJson()}"
+                "theme:${state.theme.toJson()}"),
           ),
         ));
 
