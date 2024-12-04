@@ -1,5 +1,7 @@
 {
   "appName": "微惗",
+  "communityUrl": "社区URL",
+  "joinCommunity": "加入社区",
   "home": "首页",
   "mine": "我的",
   "login": "登录",
@@ -10,6 +12,7 @@
   "darkMode": "夜间模式",
   "username": "用户名",
   "password": "密码",
+  "communityUrlPlaceholder": "请输入社区URL",
   "passwordAgain": "确认密码",
   "usernamePlaceholder": "请输入用户名",
   "passwordPlaceholder": "请输入密码",

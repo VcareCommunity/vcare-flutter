@@ -22,11 +22,16 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
-        "appName": MessageLookupByLibrary.simpleMessage("VCare"),
+        "appName": MessageLookupByLibrary.simpleMessage("Vcare"),
         "changeTheme": MessageLookupByLibrary.simpleMessage("Change theme"),
         "clickLogin": MessageLookupByLibrary.simpleMessage("Click login"),
+        "communityUrl": MessageLookupByLibrary.simpleMessage("Community URL"),
+        "communityUrlPlaceholder":
+            MessageLookupByLibrary.simpleMessage("Please enter community URL"),
         "darkMode": MessageLookupByLibrary.simpleMessage("Dark mode"),
         "home": MessageLookupByLibrary.simpleMessage("Home"),
+        "joinCommunity":
+            MessageLookupByLibrary.simpleMessage("Join the community"),
         "login": MessageLookupByLibrary.simpleMessage("Login"),
         "mine": MessageLookupByLibrary.simpleMessage("Mine"),
         "notLogin": MessageLookupByLibrary.simpleMessage("Not login"),
@@ -34,12 +39,12 @@ class MessageLookup extends MessageLookupByLibrary {
         "passwordAgain":
             MessageLookupByLibrary.simpleMessage("Confirm your password"),
         "passwordAgainPlaceholder": MessageLookupByLibrary.simpleMessage(
-            "Please Enter your password again"),
+            "Please enter your password again"),
         "passwordPlaceholder":
-            MessageLookupByLibrary.simpleMessage("Please Enter your password"),
+            MessageLookupByLibrary.simpleMessage("Please enter your password"),
         "register": MessageLookupByLibrary.simpleMessage("Register"),
         "username": MessageLookupByLibrary.simpleMessage("Username"),
         "usernamePlaceholder":
-            MessageLookupByLibrary.simpleMessage("Please Enter your username")
+            MessageLookupByLibrary.simpleMessage("Please enter your username")
       };
 }

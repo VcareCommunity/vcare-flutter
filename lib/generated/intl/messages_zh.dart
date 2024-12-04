@@ -25,8 +25,12 @@ class MessageLookup extends MessageLookupByLibrary {
         "appName": MessageLookupByLibrary.simpleMessage("微惗"),
         "changeTheme": MessageLookupByLibrary.simpleMessage("切换主题"),
         "clickLogin": MessageLookupByLibrary.simpleMessage("点击登录"),
+        "communityUrl": MessageLookupByLibrary.simpleMessage("社区URL"),
+        "communityUrlPlaceholder":
+            MessageLookupByLibrary.simpleMessage("请输入社区URL"),
         "darkMode": MessageLookupByLibrary.simpleMessage("夜间模式"),
         "home": MessageLookupByLibrary.simpleMessage("首页"),
+        "joinCommunity": MessageLookupByLibrary.simpleMessage("加入社区"),
         "login": MessageLookupByLibrary.simpleMessage("登录"),
         "mine": MessageLookupByLibrary.simpleMessage("我的"),
         "notLogin": MessageLookupByLibrary.simpleMessage("未登录"),

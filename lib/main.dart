@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/intl_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:vcare_flutter/common/constants.dart';
+import 'package:vcare_flutter/pages/add_community.dart';
 import 'package:vcare_flutter/state/VcareAppState.dart';
 
 void main() {
@@ -34,7 +35,13 @@ class MaterialWeight extends StatelessWidget {
         brightness: state.setting.isDark! ? Brightness.dark : Brightness.light,
         fontFamily: "HarmonyOS");
 
-
+    Widget content;
+    if (state.setting.baseUrl != null) {
+      content = Text("setting: ${state.setting.toJson()}"
+          "theme:${state.theme.toJson()}");
+    } else {
+      content = const AddCommunity();
+    }
 
     var materialApp = MaterialApp(
         onGenerateTitle: (context) => AppLocalizations.of(context)!.appName,
@@ -42,11 +49,8 @@ class MaterialWeight extends StatelessWidget {
         supportedLocales: AppLocalizations.supportedLocales,
         theme: theme,
         home: Scaffold(
-          body: Container(
-            child: Text("setting: ${state.setting.toJson()}"
-                "theme:${state.theme.toJson()}"),
-          ),
-        ));
+            backgroundColor: Theme.of(context).colorScheme.surface,
+            body: content));
 
     return FutureBuilder(
         future: state.initState(),

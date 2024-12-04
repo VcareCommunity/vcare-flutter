@@ -1,7 +1,15 @@
 {
-  "appName": "VCare",
+  "appName": "Vcare",
   "@appName": {
     "description": "应用名称"
+  },
+  "communityUrl": "Community URL",
+  "@communityUrl": {
+    "description": "社区URL"
+  },
+  "joinCommunity": "Join the community",
+  "@joinCommunity": {
+    "description": "加入社区"
   },
   "home": "Home",
   "@home": {
@@ -43,19 +51,23 @@
   "@password": {
     "description": "密码"
   },
+  "communityUrlPlaceholder": "Please enter community URL",
+  "@communityUrlPlaceholder": {
+    "description": "请输入社区URL"
+  },
   "passwordAgain": "Confirm your password",
   "@passwordAgain": {
     "description": "确认密码"
   },
-  "usernamePlaceholder": "Please Enter your username",
+  "usernamePlaceholder": "Please enter your username",
   "@usernamePlaceholder": {
     "description": "请输入用户名"
   },
-  "passwordPlaceholder": "Please Enter your password",
+  "passwordPlaceholder": "Please enter your password",
   "@passwordPlaceholder": {
     "description": "请输入密码"
   },
-  "passwordAgainPlaceholder": "Please Enter your password again",
+  "passwordAgainPlaceholder": "Please enter your password again",
   "@passwordAgainPlaceholder": {
     "description": "再次输入密码"
   }

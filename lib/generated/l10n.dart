@@ -50,12 +50,32 @@ class S {
     return Localizations.of<S>(context, S);
   }
 
-  /// `VCare`
+  /// `Vcare`
   String get appName {
     return Intl.message(
-      'VCare',
+      'Vcare',
       name: 'appName',
       desc: '应用名称',
+      args: [],
+    );
+  }
+
+  /// `Community URL`
+  String get communityUrl {
+    return Intl.message(
+      'Community URL',
+      name: 'communityUrl',
+      desc: '社区URL',
+      args: [],
+    );
+  }
+
+  /// `Join the community`
+  String get joinCommunity {
+    return Intl.message(
+      'Join the community',
+      name: 'joinCommunity',
+      desc: '加入社区',
       args: [],
     );
   }
@@ -160,6 +180,16 @@ class S {
     );
   }
 
+  /// `Please enter community URL`
+  String get communityUrlPlaceholder {
+    return Intl.message(
+      'Please enter community URL',
+      name: 'communityUrlPlaceholder',
+      desc: '请输入社区URL',
+      args: [],
+    );
+  }
+
   /// `Confirm your password`
   String get passwordAgain {
     return Intl.message(
@@ -170,30 +200,30 @@ class S {
     );
   }
 
-  /// `Please Enter your username`
+  /// `Please enter your username`
   String get usernamePlaceholder {
     return Intl.message(
-      'Please Enter your username',
+      'Please enter your username',
       name: 'usernamePlaceholder',
       desc: '请输入用户名',
       args: [],
     );
   }
 
-  /// `Please Enter your password`
+  /// `Please enter your password`
   String get passwordPlaceholder {
     return Intl.message(
-      'Please Enter your password',
+      'Please enter your password',
       name: 'passwordPlaceholder',
       desc: '请输入密码',
       args: [],
     );
   }
 
-  /// `Please Enter your password again`
+  /// `Please enter your password again`
   String get passwordAgainPlaceholder {
     return Intl.message(
-      'Please Enter your password again',
+      'Please enter your password again',
       name: 'passwordAgainPlaceholder',
       desc: '再次输入密码',
       args: [],
