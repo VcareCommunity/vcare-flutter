@@ -38,7 +38,7 @@ class TableSetting extends SqfEntityTableBase {
       SqfEntityFieldBase('name', DbType.text, isNotNull: true),
       SqfEntityFieldBase('version', DbType.text, isNotNull: true),
       SqfEntityFieldBase('isDark', DbType.bool,
-          defaultValue: true, isNotNull: true),
+          defaultValue: false, isNotNull: true),
       SqfEntityFieldRelationshipBase(TableTheme.getInstance, DeleteRule.CASCADE,
           relationType: RelationType.ONE_TO_MANY, fieldName: 'themeId'),
     ];
@@ -595,7 +595,7 @@ class Setting extends TableBase {
   }
 
   void _setDefaultValues() {
-    isDark = isDark ?? true;
+    isDark = isDark ?? false;
   }
 
   @override

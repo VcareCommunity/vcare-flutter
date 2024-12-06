@@ -1,5 +1,7 @@
+import 'package:chopper/chopper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/intl_localizations.dart';
+import 'package:vcare_flutter/api/config_service.dart';
 import 'package:vcare_flutter/component/text_field.dart';
 
 final _formKey = GlobalKey<FormState>();
@@ -17,7 +19,7 @@ class AddCommunity extends StatelessWidget {
         Input(
           labelText: AppLocalizations.of(context)!.communityUrl,
           hintText: AppLocalizations.of(context)!.communityUrlPlaceholder,
-          prefixIcon: Icon(
+          suffixIcon: Icon(
             Icons.message,
             color: Theme.of(context).colorScheme.primary,
           ),
@@ -51,10 +53,10 @@ class AddCommunity extends StatelessWidget {
                   SizedBox(
                     width: constraint.maxWidth * 0.5,
                     child: ElevatedButton(
-                      onPressed: () {
+                      onPressed: () async {
                         if (_formKey.currentState!.validate()) {
                           _formKey.currentState!.save();
-                          print('继续走逻辑');
+                          await addCommunity(communityUrl);
                         }
                       },
                       child: Text(AppLocalizations.of(context)!.joinCommunity),
@@ -81,7 +83,7 @@ class AddCommunity extends StatelessWidget {
                   children: [
                     input,
                     const SizedBox(
-                      height: 20,
+                      height: 40,
                     ),
                     button
                   ],
@@ -90,5 +92,14 @@ class AddCommunity extends StatelessWidget {
         }),
       ),
     );
+  }
+
+  Future<bool> addCommunity(String communityUrl) async {
+    var chopper = ChopperClient(
+        baseUrl: Uri.parse(communityUrl), services: [ConfigService.create()],converter: const JsonConverter(),errorConverter: const JsonConverter());
+    var configService = chopper.getService<ConfigService>();
+    var config = await configService.getVcareConfig();
+    print(config.body);
+    return false;
   }
 }
