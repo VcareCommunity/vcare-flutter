@@ -1,4 +1,4 @@
-package com.example.vcare_flutter
+package top.vcare.vcare_flutter
 
 import io.flutter.embedding.android.FlutterActivity
 

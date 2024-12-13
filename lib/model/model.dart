@@ -13,8 +13,8 @@ part 'model.g.dart';
 part 'model.g.view.dart';
 
 ///配置表
-const SqfEntityTable tableSetting = SqfEntityTable(
-    tableName: "setting",
+const SqfEntityTable tableConfig = SqfEntityTable(
+    tableName: "config",
     primaryKeyName: "id",
     primaryKeyType: PrimaryKeyType.integer_auto_incremental,
     useSoftDeleting: false,
@@ -27,18 +27,20 @@ const SqfEntityTable tableSetting = SqfEntityTable(
       SqfEntityFieldRelationship(
           parentTable: tableTheme,
           relationType: RelationType.ONE_TO_MANY,
-          deleteRule: DeleteRule.CASCADE),
+          deleteRule: DeleteRule.CASCADE,
+          isNotNull: true),
     ]);
 
 ///主题表
 const SqfEntityTable tableTheme = SqfEntityTable(
-    tableName: "theme",
+    tableName: "appTheme",
     primaryKeyName: "id",
     primaryKeyType: PrimaryKeyType.integer_auto_incremental,
     useSoftDeleting: false,
     fields: [
       SqfEntityField("name", DbType.text, isNotNull: true),
-      SqfEntityField("themeColor", DbType.integer, isNotNull: true),
+      SqfEntityField("themeColor", DbType.integer,
+          isNotNull: true, isUnique: true),
     ]);
 
 ///Token表
@@ -51,7 +53,7 @@ const SqfEntityTable tableToken = SqfEntityTable(
       SqfEntityField("token", DbType.text, isNotNull: true),
       SqfEntityField("refreshToken", DbType.text),
       SqfEntityFieldRelationship(
-          parentTable: tableSetting,
+          parentTable: tableConfig,
           relationType: RelationType.ONE_TO_ONE,
           deleteRule: DeleteRule.CASCADE)
     ]);
@@ -61,6 +63,6 @@ const SqfEntityModel vcareDbModel = SqfEntityModel(
   modelName: "vcareDbModel",
   databaseName: 'vcare.sqlite',
   password: null,
-  databaseTables: [tableSetting, tableTheme, tableToken],
-  formTables: [tableSetting, tableTheme, tableToken],
+  databaseTables: [tableConfig, tableTheme, tableToken],
+  formTables: [tableConfig, tableTheme, tableToken],
 );

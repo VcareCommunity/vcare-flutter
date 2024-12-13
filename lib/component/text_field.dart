@@ -12,6 +12,7 @@ class Input extends StatelessWidget {
   final List<TextInputFormatter>? inputFormatters;
   final TextInputType? keyboardType;
   final bool obscureText;
+  final String? initialValue;
 
   const Input({
     super.key,
@@ -24,6 +25,7 @@ class Input extends StatelessWidget {
     this.inputFormatters,
     this.keyboardType,
     this.obscureText = false,
+    this.initialValue,
   });
 
   @override
@@ -41,6 +43,7 @@ class Input extends StatelessWidget {
       onChanged: onChanged,
       keyboardType: keyboardType,
       obscureText: obscureText,
+      initialValue: initialValue,
     );
   }
 }

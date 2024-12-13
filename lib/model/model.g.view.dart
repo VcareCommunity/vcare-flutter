@@ -6,59 +6,59 @@
 
 part of 'model.dart';
 
-class SettingAdd extends StatefulWidget {
-  SettingAdd(this._setting);
-  final dynamic _setting;
+class ConfigAdd extends StatefulWidget {
+  ConfigAdd(this._config);
+  final dynamic _config;
   @override
-  State<StatefulWidget> createState() => SettingAddState(_setting as Setting);
+  State<StatefulWidget> createState() => ConfigAddState(_config as Config);
 }
 
-class SettingAddState extends State {
-  SettingAddState(this.setting);
-  Setting setting;
+class ConfigAddState extends State {
+  ConfigAddState(this.config);
+  Config config;
   final _formKey = GlobalKey<FormState>();
   final TextEditingController txtBaseUrl = TextEditingController();
   final TextEditingController txtName = TextEditingController();
   final TextEditingController txtVersion = TextEditingController();
 
-  List<DropdownMenuItem<int>> _dropdownMenuItemsForThemeId =
+  List<DropdownMenuItem<int>> _dropdownMenuItemsForAppThemeId =
       <DropdownMenuItem<int>>[];
-  int? _selectedThemeId;
+  int? _selectedAppThemeId;
 
   @override
   void initState() {
-    txtBaseUrl.text = setting.baseUrl == null ? '' : setting.baseUrl.toString();
-    txtName.text = setting.name == null ? '' : setting.name.toString();
-    txtVersion.text = setting.version == null ? '' : setting.version.toString();
+    txtBaseUrl.text = config.baseUrl == null ? '' : config.baseUrl.toString();
+    txtName.text = config.name == null ? '' : config.name.toString();
+    txtVersion.text = config.version == null ? '' : config.version.toString();
 
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    void buildDropDownMenuForThemeId() async {
+    void buildDropDownMenuForAppThemeId() async {
       final dropdownMenuItems =
-          await Theme().select().toDropDownMenuInt('name');
+          await AppTheme().select().toDropDownMenuInt('name');
       setState(() {
-        _dropdownMenuItemsForThemeId = dropdownMenuItems;
-        _selectedThemeId = setting.themeId;
+        _dropdownMenuItemsForAppThemeId = dropdownMenuItems;
+        _selectedAppThemeId = config.appThemeId;
       });
     }
 
-    if (_dropdownMenuItemsForThemeId.isEmpty) {
-      buildDropDownMenuForThemeId();
+    if (_dropdownMenuItemsForAppThemeId.isEmpty) {
+      buildDropDownMenuForAppThemeId();
     }
-    void onChangeDropdownItemForThemeId(int? selectedThemeId) {
+    void onChangeDropdownItemForAppThemeId(int? selectedAppThemeId) {
       setState(() {
-        _selectedThemeId = selectedThemeId;
+        _selectedAppThemeId = selectedAppThemeId;
       });
     }
 
     return Scaffold(
       appBar: AppBar(
-        title: (setting.id == null)
-            ? Text('Add a new setting')
-            : Text('Edit setting'),
+        title: (config.id == null)
+            ? Text('Add a new config')
+            : Text('Edit config'),
       ),
       body: Container(
         alignment: Alignment.topCenter,
@@ -75,7 +75,7 @@ class SettingAddState extends State {
                     buildRowName(),
                     buildRowVersion(),
                     buildRowIsDark(),
-                    buildRowThemeId(onChangeDropdownItemForThemeId),
+                    buildRowAppThemeId(onChangeDropdownItemForAppThemeId),
                     TextButton(
                       child: saveButton(),
                       onPressed: () {
@@ -141,10 +141,10 @@ class SettingAddState extends State {
       children: <Widget>[
         Text('IsDark?'),
         Checkbox(
-          value: setting.isDark ?? false,
+          value: config.isDark ?? false,
           onChanged: (bool? value) {
             setState(() {
-              setting.isDark = value;
+              config.isDark = value;
             });
           },
         ),
@@ -152,22 +152,29 @@ class SettingAddState extends State {
     );
   }
 
-  Widget buildRowThemeId(
-      void Function(int? selectedThemeId) onChangeDropdownItemForThemeId) {
+  Widget buildRowAppThemeId(
+      void Function(int? selectedAppThemeId)
+          onChangeDropdownItemForAppThemeId) {
     return Row(
       children: <Widget>[
         Expanded(
           flex: 1,
-          child: Text('Theme'),
+          child: Text('AppTheme'),
         ),
         Expanded(
             flex: 2,
             child: Container(
               child: DropdownButtonFormField(
-                value: _selectedThemeId,
-                items: _dropdownMenuItemsForThemeId,
-                onChanged: onChangeDropdownItemForThemeId,
+                value: _selectedAppThemeId,
+                items: _dropdownMenuItemsForAppThemeId,
+                onChanged: onChangeDropdownItemForAppThemeId,
                 validator: (value) {
+                  if ((_selectedAppThemeId != null &&
+                      _selectedAppThemeId.toString() != '0')) {
+                    return null;
+                  } else if (value == null || value == 0) {
+                    return 'Please enter AppTheme';
+                  }
                   return null;
                 },
               ),
@@ -191,40 +198,41 @@ class SettingAddState extends State {
   }
 
   void save() async {
-    setting
+    config
       ..baseUrl = txtBaseUrl.text
       ..name = txtName.text
       ..version = txtVersion.text
-      ..themeId = _selectedThemeId;
-    await setting.save();
-    if (setting.saveResult!.success) {
+      ..appThemeId = _selectedAppThemeId;
+    await config.save();
+    if (config.saveResult!.success) {
       Navigator.pop(context, true);
     } else {
-      UITools(context).alertDialog(setting.saveResult.toString(),
-          title: 'save Setting Failed!', callBack: () {});
+      UITools(context).alertDialog(config.saveResult.toString(),
+          title: 'save Config Failed!', callBack: () {});
     }
   }
 }
 
-class ThemeAdd extends StatefulWidget {
-  ThemeAdd(this._theme);
-  final dynamic _theme;
+class AppThemeAdd extends StatefulWidget {
+  AppThemeAdd(this._apptheme);
+  final dynamic _apptheme;
   @override
-  State<StatefulWidget> createState() => ThemeAddState(_theme as Theme);
+  State<StatefulWidget> createState() =>
+      AppThemeAddState(_apptheme as AppTheme);
 }
 
-class ThemeAddState extends State {
-  ThemeAddState(this.theme);
-  Theme theme;
+class AppThemeAddState extends State {
+  AppThemeAddState(this.apptheme);
+  AppTheme apptheme;
   final _formKey = GlobalKey<FormState>();
   final TextEditingController txtName = TextEditingController();
   final TextEditingController txtThemeColor = TextEditingController();
 
   @override
   void initState() {
-    txtName.text = theme.name == null ? '' : theme.name.toString();
+    txtName.text = apptheme.name == null ? '' : apptheme.name.toString();
     txtThemeColor.text =
-        theme.themeColor == null ? '' : theme.themeColor.toString();
+        apptheme.themeColor == null ? '' : apptheme.themeColor.toString();
 
     super.initState();
   }
@@ -233,8 +241,9 @@ class ThemeAddState extends State {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title:
-            (theme.id == null) ? Text('Add a new theme') : Text('Edit theme'),
+        title: (apptheme.id == null)
+            ? Text('Add a new apptheme')
+            : Text('Edit apptheme'),
       ),
       body: Container(
         alignment: Alignment.topCenter,
@@ -312,15 +321,15 @@ class ThemeAddState extends State {
   }
 
   void save() async {
-    theme
+    apptheme
       ..name = txtName.text
       ..themeColor = int.tryParse(txtThemeColor.text);
-    await theme.save();
-    if (theme.saveResult!.success) {
+    await apptheme.save();
+    if (apptheme.saveResult!.success) {
       Navigator.pop(context, true);
     } else {
-      UITools(context).alertDialog(theme.saveResult.toString(),
-          title: 'save Theme Failed!', callBack: () {});
+      UITools(context).alertDialog(apptheme.saveResult.toString(),
+          title: 'save AppTheme Failed!', callBack: () {});
     }
   }
 }

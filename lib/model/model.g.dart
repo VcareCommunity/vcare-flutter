@@ -14,18 +14,18 @@ part of 'model.dart';
 
 //  To use these SqfEntity classes do following:
 //  - import model.dart into where to use
-//  - start typing ex:Setting.select()... (add a few filters with fluent methods)...(add orderBy/orderBydesc if you want)...
+//  - start typing ex:Config.select()... (add a few filters with fluent methods)...(add orderBy/orderBydesc if you want)...
 //  - and then just put end of filters / or end of only select()  toSingle() / or toList()
 //  - you can select one or return List<yourObject> by your filters and orders
 //  - also you can batch update or batch delete by using delete/update methods instead of tosingle/tolist methods
 //    Enjoy.. Huseyin Tokpunar
 
 // BEGIN TABLES
-// Setting TABLE
-class TableSetting extends SqfEntityTableBase {
-  TableSetting() {
+// Config TABLE
+class TableConfig extends SqfEntityTableBase {
+  TableConfig() {
     // declare properties of EntityTable
-    tableName = 'setting';
+    tableName = 'config';
     primaryKeyName = 'id';
     primaryKeyType = PrimaryKeyType.integer_auto_incremental;
     useSoftDeleting = false;
@@ -39,22 +39,25 @@ class TableSetting extends SqfEntityTableBase {
       SqfEntityFieldBase('version', DbType.text, isNotNull: true),
       SqfEntityFieldBase('isDark', DbType.bool,
           defaultValue: false, isNotNull: true),
-      SqfEntityFieldRelationshipBase(TableTheme.getInstance, DeleteRule.CASCADE,
-          relationType: RelationType.ONE_TO_MANY, fieldName: 'themeId'),
+      SqfEntityFieldRelationshipBase(
+          TableAppTheme.getInstance, DeleteRule.CASCADE,
+          relationType: RelationType.ONE_TO_MANY,
+          fieldName: 'appThemeId',
+          isNotNull: true),
     ];
     super.init();
   }
   static SqfEntityTableBase? _instance;
   static SqfEntityTableBase get getInstance {
-    return _instance = _instance ?? TableSetting();
+    return _instance = _instance ?? TableConfig();
   }
 }
 
-// Theme TABLE
-class TableTheme extends SqfEntityTableBase {
-  TableTheme() {
+// AppTheme TABLE
+class TableAppTheme extends SqfEntityTableBase {
+  TableAppTheme() {
     // declare properties of EntityTable
-    tableName = 'theme';
+    tableName = 'appTheme';
     primaryKeyName = 'id';
     primaryKeyType = PrimaryKeyType.integer_auto_incremental;
     useSoftDeleting = false;
@@ -63,13 +66,14 @@ class TableTheme extends SqfEntityTableBase {
     // declare fields
     fields = [
       SqfEntityFieldBase('name', DbType.text, isNotNull: true),
-      SqfEntityFieldBase('themeColor', DbType.integer, isNotNull: true),
+      SqfEntityFieldBase('themeColor', DbType.integer,
+          isUnique: true, isNotNull: true),
     ];
     super.init();
   }
   static SqfEntityTableBase? _instance;
   static SqfEntityTableBase get getInstance {
-    return _instance = _instance ?? TableTheme();
+    return _instance = _instance ?? TableAppTheme();
   }
 }
 
@@ -89,8 +93,8 @@ class TableToken extends SqfEntityTableBase {
       SqfEntityFieldBase('token', DbType.text, isNotNull: true),
       SqfEntityFieldBase('refreshToken', DbType.text),
       SqfEntityFieldRelationshipBase(
-          TableSetting.getInstance, DeleteRule.CASCADE,
-          relationType: RelationType.ONE_TO_ONE, fieldName: '_settingId'),
+          TableConfig.getInstance, DeleteRule.CASCADE,
+          relationType: RelationType.ONE_TO_ONE, fieldName: '_configId'),
     ];
     super.init();
   }
@@ -110,8 +114,8 @@ class VcareDbModel extends SqfEntityModelProvider {
     preSaveAction = vcareDbModel.preSaveAction;
     logFunction = vcareDbModel.logFunction;
     databaseTables = [
-      TableSetting.getInstance,
-      TableTheme.getInstance,
+      TableConfig.getInstance,
+      TableAppTheme.getInstance,
       TableToken.getInstance,
     ];
 
@@ -121,8 +125,8 @@ class VcareDbModel extends SqfEntityModelProvider {
   }
   Map<String, dynamic> getControllers() {
     final controllers = <String, dynamic>{};
-    controllers['setting'] = SettingController.getController;
-    controllers['theme'] = ThemeController.getController;
+    controllers['config'] = ConfigController.getController;
+    controllers['apptheme'] = AppThemeController.getController;
     controllers['token'] = TokenController.getController;
 
     return controllers;
@@ -131,28 +135,28 @@ class VcareDbModel extends SqfEntityModelProvider {
 // END DATABASE MODEL
 
 // BEGIN ENTITIES
-// region Setting
-class Setting extends TableBase {
-  Setting(
+// region Config
+class Config extends TableBase {
+  Config(
       {this.id,
       this.baseUrl,
       this.name,
       this.version,
       this.isDark,
-      this.themeId}) {
+      this.appThemeId}) {
     _setDefaultValues();
     softDeleteActivated = false;
   }
-  Setting.withFields(
-      this.baseUrl, this.name, this.version, this.isDark, this.themeId) {
+  Config.withFields(
+      this.baseUrl, this.name, this.version, this.isDark, this.appThemeId) {
     _setDefaultValues();
   }
-  Setting.withId(this.id, this.baseUrl, this.name, this.version, this.isDark,
-      this.themeId) {
+  Config.withId(this.id, this.baseUrl, this.name, this.version, this.isDark,
+      this.appThemeId) {
     _setDefaultValues();
   }
   // fromMap v2.0
-  Setting.fromMap(Map<String, dynamic> o, {bool setDefaultValues = true}) {
+  Config.fromMap(Map<String, dynamic> o, {bool setDefaultValues = true}) {
     if (setDefaultValues) {
       _setDefaultValues();
     }
@@ -170,39 +174,39 @@ class Setting extends TableBase {
       isDark =
           o['isDark'].toString() == '1' || o['isDark'].toString() == 'true';
     }
-    themeId = int.tryParse(o['themeId'].toString());
+    appThemeId = int.tryParse(o['appThemeId'].toString());
 
     // RELATIONSHIPS FromMAP
-    plTheme = o['theme'] != null
-        ? Theme.fromMap(o['theme'] as Map<String, dynamic>)
+    plAppTheme = o['appTheme'] != null
+        ? AppTheme.fromMap(o['appTheme'] as Map<String, dynamic>)
         : null;
     // END RELATIONSHIPS FromMAP
   }
-  // FIELDS (Setting)
+  // FIELDS (Config)
   int? id;
   String? baseUrl;
   String? name;
   String? version;
   bool? isDark;
-  int? themeId;
+  int? appThemeId;
 
-  // end FIELDS (Setting)
+  // end FIELDS (Config)
 
-// RELATIONSHIPS (Setting)
+// RELATIONSHIPS (Config)
   /// to load parent of items to this field, use preload parameter ex: toList(preload:true) or toSingle(preload:true) or getById(preload:true)
-  /// You can also specify this object into certain preload fields!. Ex: toList(preload:true, preloadFields:['plTheme', 'plField2'..]) or so on..
-  Theme? plTheme;
+  /// You can also specify this object into certain preload fields!. Ex: toList(preload:true, preloadFields:['plAppTheme', 'plField2'..]) or so on..
+  AppTheme? plAppTheme;
 
-  /// get Theme By ThemeId
-  Future<Theme?> getTheme(
+  /// get AppTheme By AppThemeId
+  Future<AppTheme?> getAppTheme(
       {bool loadParents = false, List<String>? loadedFields}) async {
-    final _obj = await Theme()
-        .getById(themeId, loadParents: loadParents, loadedFields: loadedFields);
+    final _obj = await AppTheme().getById(appThemeId,
+        loadParents: loadParents, loadedFields: loadedFields);
     return _obj;
   }
-  // END RELATIONSHIPS (Setting)
+  // END RELATIONSHIPS (Config)
 
-// COLLECTIONS & VIRTUALS (Setting)
+// COLLECTIONS & VIRTUALS (Config)
   Token? _token;
   Token get token {
     return _token = _token ?? Token();
@@ -212,13 +216,13 @@ class Setting extends TableBase {
     _token = token;
   }
 
-// END COLLECTIONS & VIRTUALS (Setting)
+// END COLLECTIONS & VIRTUALS (Config)
 
   static const bool _softDeleteActivated = false;
-  SettingManager? __mnSetting;
+  ConfigManager? __mnConfig;
 
-  SettingManager get _mnSetting {
-    return __mnSetting = __mnSetting ?? SettingManager();
+  ConfigManager get _mnConfig {
+    return __mnConfig = __mnConfig ?? ConfigManager();
   }
 
   // METHODS
@@ -241,14 +245,14 @@ class Setting extends TableBase {
     } else if (isDark != null || !forView) {
       map['isDark'] = null;
     }
-    if (themeId != null) {
-      map['themeId'] = forView
-          ? plTheme == null
-              ? themeId
-              : plTheme!.name
-          : themeId;
-    } else if (themeId != null || !forView) {
-      map['themeId'] = null;
+    if (appThemeId != null) {
+      map['appThemeId'] = forView
+          ? plAppTheme == null
+              ? appThemeId
+              : plAppTheme!.name
+          : appThemeId;
+    } else if (appThemeId != null || !forView) {
+      map['appThemeId'] = null;
     }
 
     return map;
@@ -275,32 +279,32 @@ class Setting extends TableBase {
     } else if (isDark != null || !forView) {
       map['isDark'] = null;
     }
-    if (themeId != null) {
-      map['themeId'] = forView
-          ? plTheme == null
-              ? themeId
-              : plTheme!.name
-          : themeId;
-    } else if (themeId != null || !forView) {
-      map['themeId'] = null;
+    if (appThemeId != null) {
+      map['appThemeId'] = forView
+          ? plAppTheme == null
+              ? appThemeId
+              : plAppTheme!.name
+          : appThemeId;
+    } else if (appThemeId != null || !forView) {
+      map['appThemeId'] = null;
     }
 
-// COLLECTIONS (Setting)
+// COLLECTIONS (Config)
     if (!forQuery) {
       map['token'] = await token.toMapWithChildren();
     }
-// END COLLECTIONS (Setting)
+// END COLLECTIONS (Config)
 
     return map;
   }
 
-  /// This method returns Json String [Setting]
+  /// This method returns Json String [Config]
   @override
   String toJson() {
     return json.encode(toMap(forJson: true));
   }
 
-  /// This method returns Json String [Setting]
+  /// This method returns Json String [Config]
   @override
   Future<String> toJsonWithChilds() async {
     return json.encode(await toMapWithChildren(false, true));
@@ -308,22 +312,22 @@ class Setting extends TableBase {
 
   @override
   List<dynamic> toArgs() {
-    return [baseUrl, name, version, isDark, themeId];
+    return [baseUrl, name, version, isDark, appThemeId];
   }
 
   @override
   List<dynamic> toArgsWithIds() {
-    return [id, baseUrl, name, version, isDark, themeId];
+    return [id, baseUrl, name, version, isDark, appThemeId];
   }
 
-  static Future<List<Setting>?> fromWebUrl(Uri uri,
+  static Future<List<Config>?> fromWebUrl(Uri uri,
       {Map<String, String>? headers}) async {
     try {
       final response = await http.get(uri, headers: headers);
       return await fromJson(response.body);
     } catch (e) {
       debugPrint(
-          'SQFENTITY ERROR Setting.fromWebUrl: ErrorMessage: ${e.toString()}');
+          'SQFENTITY ERROR Config.fromWebUrl: ErrorMessage: ${e.toString()}');
       return null;
     }
   }
@@ -332,48 +336,48 @@ class Setting extends TableBase {
     return http.post(uri, headers: headers, body: toJson());
   }
 
-  static Future<List<Setting>> fromJson(String jsonBody) async {
+  static Future<List<Config>> fromJson(String jsonBody) async {
     final Iterable list = await json.decode(jsonBody) as Iterable;
-    var objList = <Setting>[];
+    var objList = <Config>[];
     try {
       objList = list
-          .map((setting) => Setting.fromMap(setting as Map<String, dynamic>))
+          .map((config) => Config.fromMap(config as Map<String, dynamic>))
           .toList();
     } catch (e) {
       debugPrint(
-          'SQFENTITY ERROR Setting.fromJson: ErrorMessage: ${e.toString()}');
+          'SQFENTITY ERROR Config.fromJson: ErrorMessage: ${e.toString()}');
     }
     return objList;
   }
 
-  static Future<List<Setting>> fromMapList(List<dynamic> data,
+  static Future<List<Config>> fromMapList(List<dynamic> data,
       {bool preload = false,
       List<String>? preloadFields,
       bool loadParents = false,
       List<String>? loadedFields,
       bool setDefaultValues = true}) async {
-    final List<Setting> objList = <Setting>[];
+    final List<Config> objList = <Config>[];
     loadedFields = loadedFields ?? [];
     for (final map in data) {
-      final obj = Setting.fromMap(map as Map<String, dynamic>,
+      final obj = Config.fromMap(map as Map<String, dynamic>,
           setDefaultValues: setDefaultValues);
       // final List<String> _loadedFields = List<String>.from(loadedFields);
 
-//      RELATIONS OneToOne (Setting)
+//      RELATIONS OneToOne (Config)
       obj._token = await Token()
           .select()
-          ._settingId
+          ._configId
           .equals(obj.id)
-          .toSingle(); //      END RELATIONS OneToOne (Setting)
+          .toSingle(); //      END RELATIONS OneToOne (Config)
 
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
         loadedFields = loadedFields ?? [];
         if ((preloadFields == null ||
             loadParents ||
-            preloadFields.contains('plTheme'))) {
-          obj.plTheme =
-              obj.plTheme ?? await obj.getTheme(loadParents: loadParents);
+            preloadFields.contains('plAppTheme'))) {
+          obj.plAppTheme =
+              obj.plAppTheme ?? await obj.getAppTheme(loadParents: loadParents);
         }
       } // END RELATIONSHIPS PRELOAD
 
@@ -382,7 +386,7 @@ class Setting extends TableBase {
     return objList;
   }
 
-  /// returns Setting by ID if exist, otherwise returns null
+  /// returns Config by ID if exist, otherwise returns null
   /// Primary Keys: int? id
   /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
   /// ex: getById(preload:true) -> Loads all related objects
@@ -390,8 +394,8 @@ class Setting extends TableBase {
   /// ex: getById(preload:true, preloadFields:['plField1','plField2'... etc])  -> Loads only certain fields what you specified
   /// bool loadParents: if true, loads all parent objects until the object has no parent
 
-  /// <returns>returns [Setting] if exist, otherwise returns null
-  Future<Setting?> getById(int? id,
+  /// <returns>returns [Config] if exist, otherwise returns null
+  Future<Config?> getById(int? id,
       {bool preload = false,
       List<String>? preloadFields,
       bool loadParents = false,
@@ -399,26 +403,26 @@ class Setting extends TableBase {
     if (id == null) {
       return null;
     }
-    Setting? obj;
-    final data = await _mnSetting.getById([id]);
+    Config? obj;
+    final data = await _mnConfig.getById([id]);
     if (data.length != 0) {
-      obj = Setting.fromMap(data[0] as Map<String, dynamic>);
+      obj = Config.fromMap(data[0] as Map<String, dynamic>);
 
-//      RELATIONS OneToOne (Setting)
+//      RELATIONS OneToOne (Config)
       obj._token = await Token()
           .select()
-          ._settingId
+          ._configId
           .equals(obj.id)
-          .toSingle(); //      END RELATIONS OneToOne (Setting)
+          .toSingle(); //      END RELATIONS OneToOne (Config)
 
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
         loadedFields = loadedFields ?? [];
         if ((preloadFields == null ||
             loadParents ||
-            preloadFields.contains('plTheme'))) {
-          obj.plTheme =
-              obj.plTheme ?? await obj.getTheme(loadParents: loadParents);
+            preloadFields.contains('plAppTheme'))) {
+          obj.plAppTheme =
+              obj.plAppTheme ?? await obj.getAppTheme(loadParents: loadParents);
         }
       } // END RELATIONSHIPS PRELOAD
     } else {
@@ -427,69 +431,69 @@ class Setting extends TableBase {
     return obj;
   }
 
-  /// Saves the (Setting) object. If the id field is null, saves as a new record and returns new id, if id is not null then updates record
+  /// Saves the (Config) object. If the id field is null, saves as a new record and returns new id, if id is not null then updates record
   /// ignoreBatch = true as a default. Set ignoreBatch to false if you run more than one save() operation those are between batchStart and batchCommit
   /// <returns>Returns id
   @override
   Future<int?> save({bool ignoreBatch = true}) async {
     if (id == null || id == 0) {
-      id = await _mnSetting.insert(this, ignoreBatch);
+      id = await _mnConfig.insert(this, ignoreBatch);
     } else {
-      await _mnSetting.update(this);
+      await _mnConfig.update(this);
     }
 
-// save() OneToOne relations (Setting)
-    _token?._settingId = id;
+// save() OneToOne relations (Config)
+    _token?._configId = id;
     await _token?._save();
-// END save() OneToOne relations (Setting)
+// END save() OneToOne relations (Config)
 
     return id;
   }
 
-  /// Saves the (Setting) object. If the id field is null, saves as a new record and returns new id, if id is not null then updates record
+  /// Saves the (Config) object. If the id field is null, saves as a new record and returns new id, if id is not null then updates record
   /// ignoreBatch = true as a default. Set ignoreBatch to false if you run more than one save() operation those are between batchStart and batchCommit
   /// <returns>Returns id
   @override
   Future<int?> saveOrThrow({bool ignoreBatch = true}) async {
     if (id == null || id == 0) {
-      id = await _mnSetting.insertOrThrow(this, ignoreBatch);
+      id = await _mnConfig.insertOrThrow(this, ignoreBatch);
 
       isInsert = true;
     } else {
       // id= await _upsert(); // removed in sqfentity_gen 1.3.0+6
-      await _mnSetting.updateOrThrow(this);
+      await _mnConfig.updateOrThrow(this);
     }
 
-// save() OneToOne relations (Setting)
-    _token?._settingId = id;
+// save() OneToOne relations (Config)
+    _token?._configId = id;
     await _token?._save();
-// END save() OneToOne relations (Setting)
+// END save() OneToOne relations (Config)
 
     return id;
   }
 
-  /// saveAs Setting. Returns a new Primary Key value of Setting
+  /// saveAs Config. Returns a new Primary Key value of Config
 
-  /// <returns>Returns a new Primary Key value of Setting
+  /// <returns>Returns a new Primary Key value of Config
   @override
   Future<int?> saveAs({bool ignoreBatch = true}) async {
     id = null;
 
-// saveAs() OneToOne relations (Setting)
+// saveAs() OneToOne relations (Config)
     token.id = null;
-// END saveAs() OneToOne relations (Setting)
+// END saveAs() OneToOne relations (Config)
 
     return save(ignoreBatch: ignoreBatch);
   }
 
-  /// saveAll method saves the sent List<Setting> as a bulk in one transaction
+  /// saveAll method saves the sent List<Config> as a bulk in one transaction
   /// Returns a <List<BoolResult>>
-  static Future<List<dynamic>> saveAll(List<Setting> settings,
+  static Future<List<dynamic>> saveAll(List<Config> configs,
       {bool? exclusive, bool? noResult, bool? continueOnError}) async {
     List<dynamic>? result = [];
     // If there is no open transaction, start one
     final isStartedBatch = await VcareDbModel().batchStart();
-    for (final obj in settings) {
+    for (final obj in configs) {
       await obj.save(ignoreBatch: false);
     }
     if (!isStartedBatch) {
@@ -497,9 +501,9 @@ class Setting extends TableBase {
           exclusive: exclusive,
           noResult: noResult,
           continueOnError: continueOnError);
-      for (int i = 0; i < settings.length; i++) {
-        if (settings[i].id == null) {
-          settings[i].id = result![i] as int;
+      for (int i = 0; i < configs.length; i++) {
+        if (configs[i].id == null) {
+          configs[i].id = result![i] as int;
         }
       }
     }
@@ -511,61 +515,61 @@ class Setting extends TableBase {
   @override
   Future<int?> upsert({bool ignoreBatch = true}) async {
     try {
-      final result = await _mnSetting.rawInsert(
-          'INSERT OR REPLACE INTO setting (id, baseUrl, name, version, isDark, themeId)  VALUES (?,?,?,?,?,?)',
-          [id, baseUrl, name, version, isDark, themeId],
+      final result = await _mnConfig.rawInsert(
+          'INSERT OR REPLACE INTO config (id, baseUrl, name, version, isDark, appThemeId)  VALUES (?,?,?,?,?,?)',
+          [id, baseUrl, name, version, isDark, appThemeId],
           ignoreBatch);
       if (result! > 0) {
         saveResult = BoolResult(
             success: true,
-            successMessage: 'Setting id=$id updated successfully');
+            successMessage: 'Config id=$id updated successfully');
       } else {
         saveResult = BoolResult(
-            success: false, errorMessage: 'Setting id=$id did not update');
+            success: false, errorMessage: 'Config id=$id did not update');
       }
       return id;
     } catch (e) {
       saveResult = BoolResult(
           success: false,
-          errorMessage: 'Setting Save failed. Error: ${e.toString()}');
+          errorMessage: 'Config Save failed. Error: ${e.toString()}');
       return null;
     }
   }
 
-  /// inserts or replaces the sent List<<Setting>> as a bulk in one transaction.
+  /// inserts or replaces the sent List<<Config>> as a bulk in one transaction.
   /// upsertAll() method is faster then saveAll() method. upsertAll() should be used when you are sure that the primary key is greater than zero
   /// Returns a BoolCommitResult
   @override
-  Future<BoolCommitResult> upsertAll(List<Setting> settings,
+  Future<BoolCommitResult> upsertAll(List<Config> configs,
       {bool? exclusive, bool? noResult, bool? continueOnError}) async {
-    final results = await _mnSetting.rawInsertAll(
-        'INSERT OR REPLACE INTO setting (id, baseUrl, name, version, isDark, themeId)  VALUES (?,?,?,?,?,?)',
-        settings,
+    final results = await _mnConfig.rawInsertAll(
+        'INSERT OR REPLACE INTO config (id, baseUrl, name, version, isDark, appThemeId)  VALUES (?,?,?,?,?,?)',
+        configs,
         exclusive: exclusive,
         noResult: noResult,
         continueOnError: continueOnError);
     return results;
   }
 
-  /// Deletes Setting
+  /// Deletes Config
 
   /// <returns>BoolResult res.success= true (Deleted), false (Could not be deleted)
   @override
   Future<BoolResult> delete([bool hardDelete = false]) async {
-    debugPrint('SQFENTITIY: delete Setting invoked (id=$id)');
+    debugPrint('SQFENTITIY: delete Config invoked (id=$id)');
     var result = BoolResult(success: false);
     {
       result =
-          await Token().select()._settingId.equals(id).and.delete(hardDelete);
+          await Token().select()._configId.equals(id).and.delete(hardDelete);
     }
     if (!result.success) {
       return result;
     }
     if (!_softDeleteActivated || hardDelete) {
-      return _mnSetting
+      return _mnConfig
           .delete(QueryParams(whereString: 'id=?', whereArguments: [id]));
     } else {
-      return _mnSetting.updateBatch(
+      return _mnConfig.updateBatch(
           QueryParams(whereString: 'id=?', whereArguments: [id]),
           {'isDeleted': 1});
     }
@@ -575,21 +579,21 @@ class Setting extends TableBase {
   Future<BoolResult> recover([bool recoverChilds = true]) {
     // not implemented because:
     final msg =
-        'set useSoftDeleting:true in the table definition of [Setting] to use this feature';
+        'set useSoftDeleting:true in the table definition of [Config] to use this feature';
     throw UnimplementedError(msg);
   }
 
   @override
-  SettingFilterBuilder select(
+  ConfigFilterBuilder select(
       {List<String>? columnsToSelect, bool? getIsDeleted}) {
-    return SettingFilterBuilder(this, getIsDeleted)
+    return ConfigFilterBuilder(this, getIsDeleted)
       ..qparams.selectColumns = columnsToSelect;
   }
 
   @override
-  SettingFilterBuilder distinct(
+  ConfigFilterBuilder distinct(
       {List<String>? columnsToSelect, bool? getIsDeleted}) {
-    return SettingFilterBuilder(this, getIsDeleted)
+    return ConfigFilterBuilder(this, getIsDeleted)
       ..qparams.selectColumns = columnsToSelect
       ..qparams.distinct = true;
   }
@@ -626,114 +630,114 @@ class Setting extends TableBase {
      */
   // END CUSTOM CODE
 }
-// endregion setting
+// endregion config
 
-// region SettingField
-class SettingField extends FilterBase {
-  SettingField(SettingFilterBuilder settingFB) : super(settingFB);
+// region ConfigField
+class ConfigField extends FilterBase {
+  ConfigField(ConfigFilterBuilder configFB) : super(configFB);
 
   @override
-  SettingFilterBuilder equals(dynamic pValue) {
-    return super.equals(pValue) as SettingFilterBuilder;
+  ConfigFilterBuilder equals(dynamic pValue) {
+    return super.equals(pValue) as ConfigFilterBuilder;
   }
 
   @override
-  SettingFilterBuilder equalsOrNull(dynamic pValue) {
-    return super.equalsOrNull(pValue) as SettingFilterBuilder;
+  ConfigFilterBuilder equalsOrNull(dynamic pValue) {
+    return super.equalsOrNull(pValue) as ConfigFilterBuilder;
   }
 
   @override
-  SettingFilterBuilder isNull() {
-    return super.isNull() as SettingFilterBuilder;
+  ConfigFilterBuilder isNull() {
+    return super.isNull() as ConfigFilterBuilder;
   }
 
   @override
-  SettingFilterBuilder contains(dynamic pValue) {
-    return super.contains(pValue) as SettingFilterBuilder;
+  ConfigFilterBuilder contains(dynamic pValue) {
+    return super.contains(pValue) as ConfigFilterBuilder;
   }
 
   @override
-  SettingFilterBuilder startsWith(dynamic pValue) {
-    return super.startsWith(pValue) as SettingFilterBuilder;
+  ConfigFilterBuilder startsWith(dynamic pValue) {
+    return super.startsWith(pValue) as ConfigFilterBuilder;
   }
 
   @override
-  SettingFilterBuilder endsWith(dynamic pValue) {
-    return super.endsWith(pValue) as SettingFilterBuilder;
+  ConfigFilterBuilder endsWith(dynamic pValue) {
+    return super.endsWith(pValue) as ConfigFilterBuilder;
   }
 
   @override
-  SettingFilterBuilder between(dynamic pFirst, dynamic pLast) {
-    return super.between(pFirst, pLast) as SettingFilterBuilder;
+  ConfigFilterBuilder between(dynamic pFirst, dynamic pLast) {
+    return super.between(pFirst, pLast) as ConfigFilterBuilder;
   }
 
   @override
-  SettingFilterBuilder greaterThan(dynamic pValue) {
-    return super.greaterThan(pValue) as SettingFilterBuilder;
+  ConfigFilterBuilder greaterThan(dynamic pValue) {
+    return super.greaterThan(pValue) as ConfigFilterBuilder;
   }
 
   @override
-  SettingFilterBuilder lessThan(dynamic pValue) {
-    return super.lessThan(pValue) as SettingFilterBuilder;
+  ConfigFilterBuilder lessThan(dynamic pValue) {
+    return super.lessThan(pValue) as ConfigFilterBuilder;
   }
 
   @override
-  SettingFilterBuilder greaterThanOrEquals(dynamic pValue) {
-    return super.greaterThanOrEquals(pValue) as SettingFilterBuilder;
+  ConfigFilterBuilder greaterThanOrEquals(dynamic pValue) {
+    return super.greaterThanOrEquals(pValue) as ConfigFilterBuilder;
   }
 
   @override
-  SettingFilterBuilder lessThanOrEquals(dynamic pValue) {
-    return super.lessThanOrEquals(pValue) as SettingFilterBuilder;
+  ConfigFilterBuilder lessThanOrEquals(dynamic pValue) {
+    return super.lessThanOrEquals(pValue) as ConfigFilterBuilder;
   }
 
   @override
-  SettingFilterBuilder inValues(dynamic pValue) {
-    return super.inValues(pValue) as SettingFilterBuilder;
+  ConfigFilterBuilder inValues(dynamic pValue) {
+    return super.inValues(pValue) as ConfigFilterBuilder;
   }
 
   @override
-  SettingField get not {
-    return super.not as SettingField;
+  ConfigField get not {
+    return super.not as ConfigField;
   }
 }
-// endregion SettingField
+// endregion ConfigField
 
-// region SettingFilterBuilder
-class SettingFilterBuilder extends ConjunctionBase {
-  SettingFilterBuilder(Setting obj, bool? getIsDeleted)
+// region ConfigFilterBuilder
+class ConfigFilterBuilder extends ConjunctionBase {
+  ConfigFilterBuilder(Config obj, bool? getIsDeleted)
       : super(obj, getIsDeleted) {
-    _mnSetting = obj._mnSetting;
+    _mnConfig = obj._mnConfig;
     _softDeleteActivated = obj.softDeleteActivated;
   }
 
   bool _softDeleteActivated = false;
-  SettingManager? _mnSetting;
+  ConfigManager? _mnConfig;
 
   /// put the sql keyword 'AND'
   @override
-  SettingFilterBuilder get and {
+  ConfigFilterBuilder get and {
     super.and;
     return this;
   }
 
   /// put the sql keyword 'OR'
   @override
-  SettingFilterBuilder get or {
+  ConfigFilterBuilder get or {
     super.or;
     return this;
   }
 
   /// open parentheses
   @override
-  SettingFilterBuilder get startBlock {
+  ConfigFilterBuilder get startBlock {
     super.startBlock;
     return this;
   }
 
   /// String whereCriteria, write raw query without 'where' keyword. Like this: 'field1 like 'test%' and field2 = 3'
   @override
-  SettingFilterBuilder where(String? whereCriteria, {dynamic parameterValue}) {
+  ConfigFilterBuilder where(String? whereCriteria, {dynamic parameterValue}) {
     super.where(whereCriteria, parameterValue: parameterValue);
     return this;
   }
@@ -741,21 +745,21 @@ class SettingFilterBuilder extends ConjunctionBase {
   /// page = page number,
   /// pagesize = row(s) per page
   @override
-  SettingFilterBuilder page(int page, int pagesize) {
+  ConfigFilterBuilder page(int page, int pagesize) {
     super.page(page, pagesize);
     return this;
   }
 
   /// int count = LIMIT
   @override
-  SettingFilterBuilder top(int count) {
+  ConfigFilterBuilder top(int count) {
     super.top(count);
     return this;
   }
 
   /// close parentheses
   @override
-  SettingFilterBuilder get endBlock {
+  ConfigFilterBuilder get endBlock {
     super.endBlock;
     return this;
   }
@@ -764,7 +768,7 @@ class SettingFilterBuilder extends ConjunctionBase {
   /// Example 1: argFields='name, date'
   /// Example 2: argFields = ['name', 'date']
   @override
-  SettingFilterBuilder orderBy(dynamic argFields) {
+  ConfigFilterBuilder orderBy(dynamic argFields) {
     super.orderBy(argFields);
     return this;
   }
@@ -773,7 +777,7 @@ class SettingFilterBuilder extends ConjunctionBase {
   /// Example 1: argFields='field1, field2'
   /// Example 2: argFields = ['field1', 'field2']
   @override
-  SettingFilterBuilder orderByDesc(dynamic argFields) {
+  ConfigFilterBuilder orderByDesc(dynamic argFields) {
     super.orderByDesc(argFields);
     return this;
   }
@@ -782,7 +786,7 @@ class SettingFilterBuilder extends ConjunctionBase {
   /// Example 1: argFields='field1, field2'
   /// Example 2: argFields = ['field1', 'field2']
   @override
-  SettingFilterBuilder groupBy(dynamic argFields) {
+  ConfigFilterBuilder groupBy(dynamic argFields) {
     super.groupBy(argFields);
     return this;
   }
@@ -791,48 +795,48 @@ class SettingFilterBuilder extends ConjunctionBase {
   /// Example 1: argFields='name, date'
   /// Example 2: argFields = ['name', 'date']
   @override
-  SettingFilterBuilder having(dynamic argFields) {
+  ConfigFilterBuilder having(dynamic argFields) {
     super.having(argFields);
     return this;
   }
 
-  SettingField _setField(SettingField? field, String colName, DbType dbtype) {
-    return SettingField(this)
+  ConfigField _setField(ConfigField? field, String colName, DbType dbtype) {
+    return ConfigField(this)
       ..param = DbParameter(
           dbType: dbtype, columnName: colName, wStartBlock: openedBlock);
   }
 
-  SettingField? _id;
-  SettingField get id {
+  ConfigField? _id;
+  ConfigField get id {
     return _id = _setField(_id, 'id', DbType.integer);
   }
 
-  SettingField? _baseUrl;
-  SettingField get baseUrl {
+  ConfigField? _baseUrl;
+  ConfigField get baseUrl {
     return _baseUrl = _setField(_baseUrl, 'baseUrl', DbType.text);
   }
 
-  SettingField? _name;
-  SettingField get name {
+  ConfigField? _name;
+  ConfigField get name {
     return _name = _setField(_name, 'name', DbType.text);
   }
 
-  SettingField? _version;
-  SettingField get version {
+  ConfigField? _version;
+  ConfigField get version {
     return _version = _setField(_version, 'version', DbType.text);
   }
 
-  SettingField? _isDark;
-  SettingField get isDark {
+  ConfigField? _isDark;
+  ConfigField get isDark {
     return _isDark = _setField(_isDark, 'isDark', DbType.bool);
   }
 
-  SettingField? _themeId;
-  SettingField get themeId {
-    return _themeId = _setField(_themeId, 'themeId', DbType.integer);
+  ConfigField? _appThemeId;
+  ConfigField get appThemeId {
+    return _appThemeId = _setField(_appThemeId, 'appThemeId', DbType.integer);
   }
 
-  /// Deletes List<Setting> bulk by query
+  /// Deletes List<Config> bulk by query
   ///
   /// <returns>BoolResult res.success= true (Deleted), false (Could not be deleted)
   @override
@@ -840,20 +844,20 @@ class SettingFilterBuilder extends ConjunctionBase {
     buildParameters();
     var r = BoolResult(success: false);
     // Delete sub records where in (Token) according to DeleteRule.CASCADE
-    final idListTokenBY_settingId = toListPrimaryKeySQL(false);
-    final resTokenBY_settingId = await Token()
+    final idListTokenBY_configId = toListPrimaryKeySQL(false);
+    final resTokenBY_configId = await Token()
         .select()
-        .where('_settingId IN (${idListTokenBY_settingId['sql']})',
-            parameterValue: idListTokenBY_settingId['args'])
+        .where('_configId IN (${idListTokenBY_configId['sql']})',
+            parameterValue: idListTokenBY_configId['args'])
         .delete(hardDelete);
-    if (!resTokenBY_settingId.success) {
-      return resTokenBY_settingId;
+    if (!resTokenBY_configId.success) {
+      return resTokenBY_configId;
     }
 
     if (_softDeleteActivated && !hardDelete) {
-      r = await _mnSetting!.updateBatch(qparams, {'isDeleted': 1});
+      r = await _mnConfig!.updateBatch(qparams, {'isDeleted': 1});
     } else {
-      r = await _mnSetting!.delete(qparams);
+      r = await _mnConfig!.delete(qparams);
     }
     return r;
   }
@@ -866,47 +870,47 @@ class SettingFilterBuilder extends ConjunctionBase {
     buildParameters();
     if (qparams.limit! > 0 || qparams.offset! > 0) {
       qparams.whereString =
-          'id IN (SELECT id from setting ${qparams.whereString!.isNotEmpty ? 'WHERE ${qparams.whereString}' : ''}${qparams.limit! > 0 ? ' LIMIT ${qparams.limit}' : ''}${qparams.offset! > 0 ? ' OFFSET ${qparams.offset}' : ''})';
+          'id IN (SELECT id from config ${qparams.whereString!.isNotEmpty ? 'WHERE ${qparams.whereString}' : ''}${qparams.limit! > 0 ? ' LIMIT ${qparams.limit}' : ''}${qparams.offset! > 0 ? ' OFFSET ${qparams.offset}' : ''})';
     }
-    return _mnSetting!.updateBatch(qparams, values);
+    return _mnConfig!.updateBatch(qparams, values);
   }
 
-  /// This method always returns [Setting] Obj if exist, otherwise returns null
+  /// This method always returns [Config] Obj if exist, otherwise returns null
   /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
   /// ex: toSingle(preload:true) -> Loads all related objects
   /// List<String> preloadFields: specify the fields you want to preload (preload parameter's value should also be "true")
   /// ex: toSingle(preload:true, preloadFields:['plField1','plField2'... etc])  -> Loads only certain fields what you specified
   /// bool loadParents: if true, loads all parent objects until the object has no parent
 
-  /// <returns> Setting?
+  /// <returns> Config?
   @override
-  Future<Setting?> toSingle(
+  Future<Config?> toSingle(
       {bool preload = false,
       List<String>? preloadFields,
       bool loadParents = false,
       List<String>? loadedFields}) async {
     buildParameters(pSize: 1);
-    final objFuture = _mnSetting!.toList(qparams);
+    final objFuture = _mnConfig!.toList(qparams);
     final data = await objFuture;
-    Setting? obj;
+    Config? obj;
     if (data.isNotEmpty) {
-      obj = Setting.fromMap(data[0] as Map<String, dynamic>);
+      obj = Config.fromMap(data[0] as Map<String, dynamic>);
 
-//      RELATIONS OneToOne (Setting)
+//      RELATIONS OneToOne (Config)
       obj._token = await Token()
           .select()
-          ._settingId
+          ._configId
           .equals(obj.id)
-          .toSingle(); //      END RELATIONS OneToOne (Setting)
+          .toSingle(); //      END RELATIONS OneToOne (Config)
 
       // RELATIONSHIPS PRELOAD
       if (preload || loadParents) {
         loadedFields = loadedFields ?? [];
         if ((preloadFields == null ||
             loadParents ||
-            preloadFields.contains('plTheme'))) {
-          obj.plTheme =
-              obj.plTheme ?? await obj.getTheme(loadParents: loadParents);
+            preloadFields.contains('plAppTheme'))) {
+          obj.plAppTheme =
+              obj.plAppTheme ?? await obj.getAppTheme(loadParents: loadParents);
         }
       } // END RELATIONSHIPS PRELOAD
     } else {
@@ -915,16 +919,16 @@ class SettingFilterBuilder extends ConjunctionBase {
     return obj;
   }
 
-  /// This method always returns [Setting]
+  /// This method always returns [Config]
   /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
   /// ex: toSingle(preload:true) -> Loads all related objects
   /// List<String> preloadFields: specify the fields you want to preload (preload parameter's value should also be "true")
   /// ex: toSingle(preload:true, preloadFields:['plField1','plField2'... etc])  -> Loads only certain fields what you specified
   /// bool loadParents: if true, loads all parent objects until the object has no parent
 
-  /// <returns> Setting?
+  /// <returns> Config?
   @override
-  Future<Setting> toSingleOrDefault(
+  Future<Config> toSingleOrDefault(
       {bool preload = false,
       List<String>? preloadFields,
       bool loadParents = false,
@@ -934,48 +938,48 @@ class SettingFilterBuilder extends ConjunctionBase {
             preloadFields: preloadFields,
             loadParents: loadParents,
             loadedFields: loadedFields) ??
-        Setting();
+        Config();
   }
 
-  /// This method returns int. [Setting]
+  /// This method returns int. [Config]
   /// <returns>int
   @override
-  Future<int> toCount([VoidCallback Function(int c)? settingCount]) async {
+  Future<int> toCount([VoidCallback Function(int c)? configCount]) async {
     buildParameters();
     qparams.selectColumns = ['COUNT(1) AS CNT'];
-    final settingsFuture = await _mnSetting!.toList(qparams);
-    final int count = settingsFuture[0]['CNT'] as int;
-    if (settingCount != null) {
-      settingCount(count);
+    final configsFuture = await _mnConfig!.toList(qparams);
+    final int count = configsFuture[0]['CNT'] as int;
+    if (configCount != null) {
+      configCount(count);
     }
     return count;
   }
 
-  /// This method returns List<Setting> [Setting]
+  /// This method returns List<Config> [Config]
   /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
   /// ex: toList(preload:true) -> Loads all related objects
   /// List<String> preloadFields: specify the fields you want to preload (preload parameter's value should also be "true")
   /// ex: toList(preload:true, preloadFields:['plField1','plField2'... etc])  -> Loads only certain fields what you specified
   /// bool loadParents: if true, loads all parent objects until the object has no parent
 
-  /// <returns>List<Setting>
+  /// <returns>List<Config>
   @override
-  Future<List<Setting>> toList(
+  Future<List<Config>> toList(
       {bool preload = false,
       List<String>? preloadFields,
       bool loadParents = false,
       List<String>? loadedFields}) async {
     final data = await toMapList();
-    final List<Setting> settingsData = await Setting.fromMapList(data,
+    final List<Config> configsData = await Config.fromMapList(data,
         preload: preload,
         preloadFields: preloadFields,
         loadParents: loadParents,
         loadedFields: loadedFields,
         setDefaultValues: qparams.selectColumns == null);
-    return settingsData;
+    return configsData;
   }
 
-  /// This method returns Json String [Setting]
+  /// This method returns Json String [Config]
   @override
   Future<String> toJson() async {
     final list = <dynamic>[];
@@ -986,7 +990,7 @@ class SettingFilterBuilder extends ConjunctionBase {
     return json.encode(list);
   }
 
-  /// This method returns Json String. [Setting]
+  /// This method returns Json String. [Config]
   @override
   Future<String> toJsonWithChilds() async {
     final list = <dynamic>[];
@@ -997,32 +1001,32 @@ class SettingFilterBuilder extends ConjunctionBase {
     return json.encode(list);
   }
 
-  /// This method returns List<dynamic>. [Setting]
+  /// This method returns List<dynamic>. [Config]
   /// <returns>List<dynamic>
   @override
   Future<List<dynamic>> toMapList() async {
     buildParameters();
-    return await _mnSetting!.toList(qparams);
+    return await _mnConfig!.toList(qparams);
   }
 
-  /// Returns List<DropdownMenuItem<Setting>>
-  Future<List<DropdownMenuItem<Setting>>> toDropDownMenu(
+  /// Returns List<DropdownMenuItem<Config>>
+  Future<List<DropdownMenuItem<Config>>> toDropDownMenu(
       String displayTextColumn,
-      [VoidCallback Function(List<DropdownMenuItem<Setting>> o)?
+      [VoidCallback Function(List<DropdownMenuItem<Config>> o)?
           dropDownMenu]) async {
     buildParameters();
-    final settingsFuture = _mnSetting!.toList(qparams);
+    final configsFuture = _mnConfig!.toList(qparams);
 
-    final data = await settingsFuture;
+    final data = await configsFuture;
     final int count = data.length;
-    final List<DropdownMenuItem<Setting>> items = []..add(DropdownMenuItem(
-        value: Setting(),
+    final List<DropdownMenuItem<Config>> items = []..add(DropdownMenuItem(
+        value: Config(),
         child: Text('-'),
       ));
     for (int i = 0; i < count; i++) {
       items.add(
         DropdownMenuItem(
-          value: Setting.fromMap(data[i] as Map<String, dynamic>),
+          value: Config.fromMap(data[i] as Map<String, dynamic>),
           child: Text(data[i][displayTextColumn].toString()),
         ),
       );
@@ -1040,9 +1044,9 @@ class SettingFilterBuilder extends ConjunctionBase {
           dropDownMenu]) async {
     buildParameters();
     qparams.selectColumns = ['id', displayTextColumn];
-    final settingsFuture = _mnSetting!.toList(qparams);
+    final configsFuture = _mnConfig!.toList(qparams);
 
-    final data = await settingsFuture;
+    final data = await configsFuture;
     final int count = data.length;
     final List<DropdownMenuItem<int>> items = []..add(DropdownMenuItem(
         value: 0,
@@ -1062,7 +1066,7 @@ class SettingFilterBuilder extends ConjunctionBase {
     return items;
   }
 
-  /// This method returns Primary Key List SQL and Parameters retVal = Map<String,dynamic>. [Setting]
+  /// This method returns Primary Key List SQL and Parameters retVal = Map<String,dynamic>. [Config]
   /// retVal['sql'] = SQL statement string, retVal['args'] = whereArguments List<dynamic>;
   /// <returns>List<String>
   @override
@@ -1071,7 +1075,7 @@ class SettingFilterBuilder extends ConjunctionBase {
     if (buildParams) {
       buildParameters();
     }
-    _retVal['sql'] = 'SELECT `id` FROM setting WHERE ${qparams.whereString}';
+    _retVal['sql'] = 'SELECT `id` FROM config WHERE ${qparams.whereString}';
     _retVal['args'] = qparams.whereArguments;
     return _retVal;
   }
@@ -1085,7 +1089,7 @@ class SettingFilterBuilder extends ConjunctionBase {
     }
     final List<int> idData = <int>[];
     qparams.selectColumns = ['id'];
-    final idFuture = await _mnSetting!.toList(qparams);
+    final idFuture = await _mnConfig!.toList(qparams);
 
     final int count = idFuture.length;
     for (int i = 0; i < count; i++) {
@@ -1094,13 +1098,13 @@ class SettingFilterBuilder extends ConjunctionBase {
     return idData;
   }
 
-  /// Returns List<dynamic> for selected columns. Use this method for 'groupBy' with min,max,avg..  [Setting]
+  /// Returns List<dynamic> for selected columns. Use this method for 'groupBy' with min,max,avg..  [Config]
   /// Sample usage: (see EXAMPLE 4.2 at https://github.com/hhtokpinar/sqfEntity#group-by)
   @override
   Future<List<dynamic>> toListObject() async {
     buildParameters();
 
-    final objectFuture = _mnSetting!.toList(qparams);
+    final objectFuture = _mnConfig!.toList(qparams);
 
     final List<dynamic> objectsData = <dynamic>[];
     final data = await objectFuture;
@@ -1112,13 +1116,13 @@ class SettingFilterBuilder extends ConjunctionBase {
   }
 
   /// Returns List<String> for selected first column
-  /// Sample usage: await Setting.select(columnsToSelect: ['columnName']).toListString()
+  /// Sample usage: await Config.select(columnsToSelect: ['columnName']).toListString()
   @override
   Future<List<String>> toListString(
       [VoidCallback Function(List<String> o)? listString]) async {
     buildParameters();
 
-    final objectFuture = _mnSetting!.toList(qparams);
+    final objectFuture = _mnConfig!.toList(qparams);
 
     final List<String> objectsData = <String>[];
     final data = await objectFuture;
@@ -1132,10 +1136,10 @@ class SettingFilterBuilder extends ConjunctionBase {
     return objectsData;
   }
 }
-// endregion SettingFilterBuilder
+// endregion ConfigFilterBuilder
 
-// region SettingFields
-class SettingFields {
+// region ConfigFields
+class ConfigFields {
   static TableField? _fId;
   static TableField get id {
     return _fId = _fId ?? SqlSyntax.setField(_fId, 'id', DbType.integer);
@@ -1164,41 +1168,41 @@ class SettingFields {
         _fIsDark ?? SqlSyntax.setField(_fIsDark, 'isDark', DbType.bool);
   }
 
-  static TableField? _fThemeId;
-  static TableField get themeId {
-    return _fThemeId =
-        _fThemeId ?? SqlSyntax.setField(_fThemeId, 'themeId', DbType.integer);
+  static TableField? _fAppThemeId;
+  static TableField get appThemeId {
+    return _fAppThemeId = _fAppThemeId ??
+        SqlSyntax.setField(_fAppThemeId, 'appThemeId', DbType.integer);
   }
 }
-// endregion SettingFields
+// endregion ConfigFields
 
-//region SettingManager
-class SettingManager extends SqfEntityProvider {
-  SettingManager()
+//region ConfigManager
+class ConfigManager extends SqfEntityProvider {
+  ConfigManager()
       : super(VcareDbModel(),
             tableName: _tableName,
             primaryKeyList: _primaryKeyList,
             whereStr: _whereStr);
-  static const String _tableName = 'setting';
+  static const String _tableName = 'config';
   static const List<String> _primaryKeyList = ['id'];
   static const String _whereStr = 'id=?';
 }
 
-//endregion SettingManager
-// region Theme
-class Theme extends TableBase {
-  Theme({this.id, this.name, this.themeColor}) {
+//endregion ConfigManager
+// region AppTheme
+class AppTheme extends TableBase {
+  AppTheme({this.id, this.name, this.themeColor}) {
     _setDefaultValues();
     softDeleteActivated = false;
   }
-  Theme.withFields(this.name, this.themeColor) {
+  AppTheme.withFields(this.name, this.themeColor) {
     _setDefaultValues();
   }
-  Theme.withId(this.id, this.name, this.themeColor) {
+  AppTheme.withId(this.id, this.name, this.themeColor) {
     _setDefaultValues();
   }
   // fromMap v2.0
-  Theme.fromMap(Map<String, dynamic> o, {bool setDefaultValues = true}) {
+  AppTheme.fromMap(Map<String, dynamic> o, {bool setDefaultValues = true}) {
     if (setDefaultValues) {
       _setDefaultValues();
     }
@@ -1210,38 +1214,38 @@ class Theme extends TableBase {
       themeColor = int.tryParse(o['themeColor'].toString());
     }
   }
-  // FIELDS (Theme)
+  // FIELDS (AppTheme)
   int? id;
   String? name;
   int? themeColor;
 
-  // end FIELDS (Theme)
+  // end FIELDS (AppTheme)
 
-// COLLECTIONS & VIRTUALS (Theme)
+// COLLECTIONS & VIRTUALS (AppTheme)
   /// to load children of items to this field, use preload parameter. Ex: toList(preload:true) or toSingle(preload:true) or getById(preload:true)
-  /// You can also specify this object into certain preload fields!. Ex: toList(preload:true, preloadFields:['plSettings', 'plField2'..]) or so on..
-  List<Setting>? plSettings;
+  /// You can also specify this object into certain preload fields!. Ex: toList(preload:true, preloadFields:['plConfigs', 'plField2'..]) or so on..
+  List<Config>? plConfigs;
 
-  /// get Setting(s) filtered by id=themeId
-  SettingFilterBuilder? getSettings(
+  /// get Config(s) filtered by id=appThemeId
+  ConfigFilterBuilder? getConfigs(
       {List<String>? columnsToSelect, bool? getIsDeleted}) {
     if (id == null) {
       return null;
     }
-    return Setting()
+    return Config()
         .select(columnsToSelect: columnsToSelect, getIsDeleted: getIsDeleted)
-        .themeId
+        .appThemeId
         .equals(id)
         .and;
   }
 
-// END COLLECTIONS & VIRTUALS (Theme)
+// END COLLECTIONS & VIRTUALS (AppTheme)
 
   static const bool _softDeleteActivated = false;
-  ThemeManager? __mnTheme;
+  AppThemeManager? __mnAppTheme;
 
-  ThemeManager get _mnTheme {
-    return __mnTheme = __mnTheme ?? ThemeManager();
+  AppThemeManager get _mnAppTheme {
+    return __mnAppTheme = __mnAppTheme ?? AppThemeManager();
   }
 
   // METHODS
@@ -1274,22 +1278,22 @@ class Theme extends TableBase {
       map['themeColor'] = themeColor;
     }
 
-// COLLECTIONS (Theme)
+// COLLECTIONS (AppTheme)
     if (!forQuery) {
-      map['Settings'] = await getSettings()!.toMapList();
+      map['Configs'] = await getConfigs()!.toMapList();
     }
-// END COLLECTIONS (Theme)
+// END COLLECTIONS (AppTheme)
 
     return map;
   }
 
-  /// This method returns Json String [Theme]
+  /// This method returns Json String [AppTheme]
   @override
   String toJson() {
     return json.encode(toMap(forJson: true));
   }
 
-  /// This method returns Json String [Theme]
+  /// This method returns Json String [AppTheme]
   @override
   Future<String> toJsonWithChilds() async {
     return json.encode(await toMapWithChildren(false, true));
@@ -1305,14 +1309,14 @@ class Theme extends TableBase {
     return [id, name, themeColor];
   }
 
-  static Future<List<Theme>?> fromWebUrl(Uri uri,
+  static Future<List<AppTheme>?> fromWebUrl(Uri uri,
       {Map<String, String>? headers}) async {
     try {
       final response = await http.get(uri, headers: headers);
       return await fromJson(response.body);
     } catch (e) {
       debugPrint(
-          'SQFENTITY ERROR Theme.fromWebUrl: ErrorMessage: ${e.toString()}');
+          'SQFENTITY ERROR AppTheme.fromWebUrl: ErrorMessage: ${e.toString()}');
       return null;
     }
   }
@@ -1321,42 +1325,42 @@ class Theme extends TableBase {
     return http.post(uri, headers: headers, body: toJson());
   }
 
-  static Future<List<Theme>> fromJson(String jsonBody) async {
+  static Future<List<AppTheme>> fromJson(String jsonBody) async {
     final Iterable list = await json.decode(jsonBody) as Iterable;
-    var objList = <Theme>[];
+    var objList = <AppTheme>[];
     try {
       objList = list
-          .map((theme) => Theme.fromMap(theme as Map<String, dynamic>))
+          .map((apptheme) => AppTheme.fromMap(apptheme as Map<String, dynamic>))
           .toList();
     } catch (e) {
       debugPrint(
-          'SQFENTITY ERROR Theme.fromJson: ErrorMessage: ${e.toString()}');
+          'SQFENTITY ERROR AppTheme.fromJson: ErrorMessage: ${e.toString()}');
     }
     return objList;
   }
 
-  static Future<List<Theme>> fromMapList(List<dynamic> data,
+  static Future<List<AppTheme>> fromMapList(List<dynamic> data,
       {bool preload = false,
       List<String>? preloadFields,
       bool loadParents = false,
       List<String>? loadedFields,
       bool setDefaultValues = true}) async {
-    final List<Theme> objList = <Theme>[];
+    final List<AppTheme> objList = <AppTheme>[];
     loadedFields = loadedFields ?? [];
     for (final map in data) {
-      final obj = Theme.fromMap(map as Map<String, dynamic>,
+      final obj = AppTheme.fromMap(map as Map<String, dynamic>,
           setDefaultValues: setDefaultValues);
       // final List<String> _loadedFields = List<String>.from(loadedFields);
 
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (/*!_loadedfields!.contains('theme.plSettings') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('appTheme.plConfigs') && */ (preloadFields ==
                 null ||
-            preloadFields.contains('plSettings'))) {
-          /*_loadedfields!.add('theme.plSettings'); */ obj.plSettings =
-              obj.plSettings ??
-                  await obj.getSettings()!.toList(
+            preloadFields.contains('plConfigs'))) {
+          /*_loadedfields!.add('appTheme.plConfigs'); */ obj.plConfigs =
+              obj.plConfigs ??
+                  await obj.getConfigs()!.toList(
                       preload: preload,
                       preloadFields: preloadFields,
                       loadParents: false /*, loadedFields:_loadedFields*/);
@@ -1368,7 +1372,7 @@ class Theme extends TableBase {
     return objList;
   }
 
-  /// returns Theme by ID if exist, otherwise returns null
+  /// returns AppTheme by ID if exist, otherwise returns null
   /// Primary Keys: int? id
   /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
   /// ex: getById(preload:true) -> Loads all related objects
@@ -1376,8 +1380,8 @@ class Theme extends TableBase {
   /// ex: getById(preload:true, preloadFields:['plField1','plField2'... etc])  -> Loads only certain fields what you specified
   /// bool loadParents: if true, loads all parent objects until the object has no parent
 
-  /// <returns>returns [Theme] if exist, otherwise returns null
-  Future<Theme?> getById(int? id,
+  /// <returns>returns [AppTheme] if exist, otherwise returns null
+  Future<AppTheme?> getById(int? id,
       {bool preload = false,
       List<String>? preloadFields,
       bool loadParents = false,
@@ -1385,20 +1389,20 @@ class Theme extends TableBase {
     if (id == null) {
       return null;
     }
-    Theme? obj;
-    final data = await _mnTheme.getById([id]);
+    AppTheme? obj;
+    final data = await _mnAppTheme.getById([id]);
     if (data.length != 0) {
-      obj = Theme.fromMap(data[0] as Map<String, dynamic>);
+      obj = AppTheme.fromMap(data[0] as Map<String, dynamic>);
 
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (/*!_loadedfields!.contains('theme.plSettings') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('appTheme.plConfigs') && */ (preloadFields ==
                 null ||
-            preloadFields.contains('plSettings'))) {
-          /*_loadedfields!.add('theme.plSettings'); */ obj.plSettings =
-              obj.plSettings ??
-                  await obj.getSettings()!.toList(
+            preloadFields.contains('plConfigs'))) {
+          /*_loadedfields!.add('appTheme.plConfigs'); */ obj.plConfigs =
+              obj.plConfigs ??
+                  await obj.getConfigs()!.toList(
                       preload: preload,
                       preloadFields: preloadFields,
                       loadParents: false /*, loadedFields:_loadedFields*/);
@@ -1410,40 +1414,40 @@ class Theme extends TableBase {
     return obj;
   }
 
-  /// Saves the (Theme) object. If the id field is null, saves as a new record and returns new id, if id is not null then updates record
+  /// Saves the (AppTheme) object. If the id field is null, saves as a new record and returns new id, if id is not null then updates record
   /// ignoreBatch = true as a default. Set ignoreBatch to false if you run more than one save() operation those are between batchStart and batchCommit
   /// <returns>Returns id
   @override
   Future<int?> save({bool ignoreBatch = true}) async {
     if (id == null || id == 0) {
-      id = await _mnTheme.insert(this, ignoreBatch);
+      id = await _mnAppTheme.insert(this, ignoreBatch);
     } else {
-      await _mnTheme.update(this);
+      await _mnAppTheme.update(this);
     }
 
     return id;
   }
 
-  /// Saves the (Theme) object. If the id field is null, saves as a new record and returns new id, if id is not null then updates record
+  /// Saves the (AppTheme) object. If the id field is null, saves as a new record and returns new id, if id is not null then updates record
   /// ignoreBatch = true as a default. Set ignoreBatch to false if you run more than one save() operation those are between batchStart and batchCommit
   /// <returns>Returns id
   @override
   Future<int?> saveOrThrow({bool ignoreBatch = true}) async {
     if (id == null || id == 0) {
-      id = await _mnTheme.insertOrThrow(this, ignoreBatch);
+      id = await _mnAppTheme.insertOrThrow(this, ignoreBatch);
 
       isInsert = true;
     } else {
       // id= await _upsert(); // removed in sqfentity_gen 1.3.0+6
-      await _mnTheme.updateOrThrow(this);
+      await _mnAppTheme.updateOrThrow(this);
     }
 
     return id;
   }
 
-  /// saveAs Theme. Returns a new Primary Key value of Theme
+  /// saveAs AppTheme. Returns a new Primary Key value of AppTheme
 
-  /// <returns>Returns a new Primary Key value of Theme
+  /// <returns>Returns a new Primary Key value of AppTheme
   @override
   Future<int?> saveAs({bool ignoreBatch = true}) async {
     id = null;
@@ -1451,14 +1455,14 @@ class Theme extends TableBase {
     return save(ignoreBatch: ignoreBatch);
   }
 
-  /// saveAll method saves the sent List<Theme> as a bulk in one transaction
+  /// saveAll method saves the sent List<AppTheme> as a bulk in one transaction
   /// Returns a <List<BoolResult>>
-  static Future<List<dynamic>> saveAll(List<Theme> themes,
+  static Future<List<dynamic>> saveAll(List<AppTheme> appthemes,
       {bool? exclusive, bool? noResult, bool? continueOnError}) async {
     List<dynamic>? result = [];
     // If there is no open transaction, start one
     final isStartedBatch = await VcareDbModel().batchStart();
-    for (final obj in themes) {
+    for (final obj in appthemes) {
       await obj.save(ignoreBatch: false);
     }
     if (!isStartedBatch) {
@@ -1466,9 +1470,9 @@ class Theme extends TableBase {
           exclusive: exclusive,
           noResult: noResult,
           continueOnError: continueOnError);
-      for (int i = 0; i < themes.length; i++) {
-        if (themes[i].id == null) {
-          themes[i].id = result![i] as int;
+      for (int i = 0; i < appthemes.length; i++) {
+        if (appthemes[i].id == null) {
+          appthemes[i].id = result![i] as int;
         }
       }
     }
@@ -1480,60 +1484,61 @@ class Theme extends TableBase {
   @override
   Future<int?> upsert({bool ignoreBatch = true}) async {
     try {
-      final result = await _mnTheme.rawInsert(
-          'INSERT OR REPLACE INTO theme (id, name, themeColor)  VALUES (?,?,?)',
+      final result = await _mnAppTheme.rawInsert(
+          'INSERT OR REPLACE INTO appTheme (id, name, themeColor)  VALUES (?,?,?)',
           [id, name, themeColor],
           ignoreBatch);
       if (result! > 0) {
         saveResult = BoolResult(
-            success: true, successMessage: 'Theme id=$id updated successfully');
+            success: true,
+            successMessage: 'AppTheme id=$id updated successfully');
       } else {
         saveResult = BoolResult(
-            success: false, errorMessage: 'Theme id=$id did not update');
+            success: false, errorMessage: 'AppTheme id=$id did not update');
       }
       return id;
     } catch (e) {
       saveResult = BoolResult(
           success: false,
-          errorMessage: 'Theme Save failed. Error: ${e.toString()}');
+          errorMessage: 'AppTheme Save failed. Error: ${e.toString()}');
       return null;
     }
   }
 
-  /// inserts or replaces the sent List<<Theme>> as a bulk in one transaction.
+  /// inserts or replaces the sent List<<AppTheme>> as a bulk in one transaction.
   /// upsertAll() method is faster then saveAll() method. upsertAll() should be used when you are sure that the primary key is greater than zero
   /// Returns a BoolCommitResult
   @override
-  Future<BoolCommitResult> upsertAll(List<Theme> themes,
+  Future<BoolCommitResult> upsertAll(List<AppTheme> appthemes,
       {bool? exclusive, bool? noResult, bool? continueOnError}) async {
-    final results = await _mnTheme.rawInsertAll(
-        'INSERT OR REPLACE INTO theme (id, name, themeColor)  VALUES (?,?,?)',
-        themes,
+    final results = await _mnAppTheme.rawInsertAll(
+        'INSERT OR REPLACE INTO appTheme (id, name, themeColor)  VALUES (?,?,?)',
+        appthemes,
         exclusive: exclusive,
         noResult: noResult,
         continueOnError: continueOnError);
     return results;
   }
 
-  /// Deletes Theme
+  /// Deletes AppTheme
 
   /// <returns>BoolResult res.success= true (Deleted), false (Could not be deleted)
   @override
   Future<BoolResult> delete([bool hardDelete = false]) async {
-    debugPrint('SQFENTITIY: delete Theme invoked (id=$id)');
+    debugPrint('SQFENTITIY: delete AppTheme invoked (id=$id)');
     var result = BoolResult(success: false);
     {
       result =
-          await Setting().select().themeId.equals(id).and.delete(hardDelete);
+          await Config().select().appThemeId.equals(id).and.delete(hardDelete);
     }
     if (!result.success) {
       return result;
     }
     if (!_softDeleteActivated || hardDelete) {
-      return _mnTheme
+      return _mnAppTheme
           .delete(QueryParams(whereString: 'id=?', whereArguments: [id]));
     } else {
-      return _mnTheme.updateBatch(
+      return _mnAppTheme.updateBatch(
           QueryParams(whereString: 'id=?', whereArguments: [id]),
           {'isDeleted': 1});
     }
@@ -1543,21 +1548,21 @@ class Theme extends TableBase {
   Future<BoolResult> recover([bool recoverChilds = true]) {
     // not implemented because:
     final msg =
-        'set useSoftDeleting:true in the table definition of [Theme] to use this feature';
+        'set useSoftDeleting:true in the table definition of [AppTheme] to use this feature';
     throw UnimplementedError(msg);
   }
 
   @override
-  ThemeFilterBuilder select(
+  AppThemeFilterBuilder select(
       {List<String>? columnsToSelect, bool? getIsDeleted}) {
-    return ThemeFilterBuilder(this, getIsDeleted)
+    return AppThemeFilterBuilder(this, getIsDeleted)
       ..qparams.selectColumns = columnsToSelect;
   }
 
   @override
-  ThemeFilterBuilder distinct(
+  AppThemeFilterBuilder distinct(
       {List<String>? columnsToSelect, bool? getIsDeleted}) {
-    return ThemeFilterBuilder(this, getIsDeleted)
+    return AppThemeFilterBuilder(this, getIsDeleted)
       ..qparams.selectColumns = columnsToSelect
       ..qparams.distinct = true;
   }
@@ -1592,113 +1597,114 @@ class Theme extends TableBase {
      */
   // END CUSTOM CODE
 }
-// endregion theme
+// endregion apptheme
 
-// region ThemeField
-class ThemeField extends FilterBase {
-  ThemeField(ThemeFilterBuilder themeFB) : super(themeFB);
+// region AppThemeField
+class AppThemeField extends FilterBase {
+  AppThemeField(AppThemeFilterBuilder appthemeFB) : super(appthemeFB);
 
   @override
-  ThemeFilterBuilder equals(dynamic pValue) {
-    return super.equals(pValue) as ThemeFilterBuilder;
+  AppThemeFilterBuilder equals(dynamic pValue) {
+    return super.equals(pValue) as AppThemeFilterBuilder;
   }
 
   @override
-  ThemeFilterBuilder equalsOrNull(dynamic pValue) {
-    return super.equalsOrNull(pValue) as ThemeFilterBuilder;
+  AppThemeFilterBuilder equalsOrNull(dynamic pValue) {
+    return super.equalsOrNull(pValue) as AppThemeFilterBuilder;
   }
 
   @override
-  ThemeFilterBuilder isNull() {
-    return super.isNull() as ThemeFilterBuilder;
+  AppThemeFilterBuilder isNull() {
+    return super.isNull() as AppThemeFilterBuilder;
   }
 
   @override
-  ThemeFilterBuilder contains(dynamic pValue) {
-    return super.contains(pValue) as ThemeFilterBuilder;
+  AppThemeFilterBuilder contains(dynamic pValue) {
+    return super.contains(pValue) as AppThemeFilterBuilder;
   }
 
   @override
-  ThemeFilterBuilder startsWith(dynamic pValue) {
-    return super.startsWith(pValue) as ThemeFilterBuilder;
+  AppThemeFilterBuilder startsWith(dynamic pValue) {
+    return super.startsWith(pValue) as AppThemeFilterBuilder;
   }
 
   @override
-  ThemeFilterBuilder endsWith(dynamic pValue) {
-    return super.endsWith(pValue) as ThemeFilterBuilder;
+  AppThemeFilterBuilder endsWith(dynamic pValue) {
+    return super.endsWith(pValue) as AppThemeFilterBuilder;
   }
 
   @override
-  ThemeFilterBuilder between(dynamic pFirst, dynamic pLast) {
-    return super.between(pFirst, pLast) as ThemeFilterBuilder;
+  AppThemeFilterBuilder between(dynamic pFirst, dynamic pLast) {
+    return super.between(pFirst, pLast) as AppThemeFilterBuilder;
   }
 
   @override
-  ThemeFilterBuilder greaterThan(dynamic pValue) {
-    return super.greaterThan(pValue) as ThemeFilterBuilder;
+  AppThemeFilterBuilder greaterThan(dynamic pValue) {
+    return super.greaterThan(pValue) as AppThemeFilterBuilder;
   }
 
   @override
-  ThemeFilterBuilder lessThan(dynamic pValue) {
-    return super.lessThan(pValue) as ThemeFilterBuilder;
+  AppThemeFilterBuilder lessThan(dynamic pValue) {
+    return super.lessThan(pValue) as AppThemeFilterBuilder;
   }
 
   @override
-  ThemeFilterBuilder greaterThanOrEquals(dynamic pValue) {
-    return super.greaterThanOrEquals(pValue) as ThemeFilterBuilder;
+  AppThemeFilterBuilder greaterThanOrEquals(dynamic pValue) {
+    return super.greaterThanOrEquals(pValue) as AppThemeFilterBuilder;
   }
 
   @override
-  ThemeFilterBuilder lessThanOrEquals(dynamic pValue) {
-    return super.lessThanOrEquals(pValue) as ThemeFilterBuilder;
+  AppThemeFilterBuilder lessThanOrEquals(dynamic pValue) {
+    return super.lessThanOrEquals(pValue) as AppThemeFilterBuilder;
   }
 
   @override
-  ThemeFilterBuilder inValues(dynamic pValue) {
-    return super.inValues(pValue) as ThemeFilterBuilder;
+  AppThemeFilterBuilder inValues(dynamic pValue) {
+    return super.inValues(pValue) as AppThemeFilterBuilder;
   }
 
   @override
-  ThemeField get not {
-    return super.not as ThemeField;
+  AppThemeField get not {
+    return super.not as AppThemeField;
   }
 }
-// endregion ThemeField
+// endregion AppThemeField
 
-// region ThemeFilterBuilder
-class ThemeFilterBuilder extends ConjunctionBase {
-  ThemeFilterBuilder(Theme obj, bool? getIsDeleted) : super(obj, getIsDeleted) {
-    _mnTheme = obj._mnTheme;
+// region AppThemeFilterBuilder
+class AppThemeFilterBuilder extends ConjunctionBase {
+  AppThemeFilterBuilder(AppTheme obj, bool? getIsDeleted)
+      : super(obj, getIsDeleted) {
+    _mnAppTheme = obj._mnAppTheme;
     _softDeleteActivated = obj.softDeleteActivated;
   }
 
   bool _softDeleteActivated = false;
-  ThemeManager? _mnTheme;
+  AppThemeManager? _mnAppTheme;
 
   /// put the sql keyword 'AND'
   @override
-  ThemeFilterBuilder get and {
+  AppThemeFilterBuilder get and {
     super.and;
     return this;
   }
 
   /// put the sql keyword 'OR'
   @override
-  ThemeFilterBuilder get or {
+  AppThemeFilterBuilder get or {
     super.or;
     return this;
   }
 
   /// open parentheses
   @override
-  ThemeFilterBuilder get startBlock {
+  AppThemeFilterBuilder get startBlock {
     super.startBlock;
     return this;
   }
 
   /// String whereCriteria, write raw query without 'where' keyword. Like this: 'field1 like 'test%' and field2 = 3'
   @override
-  ThemeFilterBuilder where(String? whereCriteria, {dynamic parameterValue}) {
+  AppThemeFilterBuilder where(String? whereCriteria, {dynamic parameterValue}) {
     super.where(whereCriteria, parameterValue: parameterValue);
     return this;
   }
@@ -1706,21 +1712,21 @@ class ThemeFilterBuilder extends ConjunctionBase {
   /// page = page number,
   /// pagesize = row(s) per page
   @override
-  ThemeFilterBuilder page(int page, int pagesize) {
+  AppThemeFilterBuilder page(int page, int pagesize) {
     super.page(page, pagesize);
     return this;
   }
 
   /// int count = LIMIT
   @override
-  ThemeFilterBuilder top(int count) {
+  AppThemeFilterBuilder top(int count) {
     super.top(count);
     return this;
   }
 
   /// close parentheses
   @override
-  ThemeFilterBuilder get endBlock {
+  AppThemeFilterBuilder get endBlock {
     super.endBlock;
     return this;
   }
@@ -1729,7 +1735,7 @@ class ThemeFilterBuilder extends ConjunctionBase {
   /// Example 1: argFields='name, date'
   /// Example 2: argFields = ['name', 'date']
   @override
-  ThemeFilterBuilder orderBy(dynamic argFields) {
+  AppThemeFilterBuilder orderBy(dynamic argFields) {
     super.orderBy(argFields);
     return this;
   }
@@ -1738,7 +1744,7 @@ class ThemeFilterBuilder extends ConjunctionBase {
   /// Example 1: argFields='field1, field2'
   /// Example 2: argFields = ['field1', 'field2']
   @override
-  ThemeFilterBuilder orderByDesc(dynamic argFields) {
+  AppThemeFilterBuilder orderByDesc(dynamic argFields) {
     super.orderByDesc(argFields);
     return this;
   }
@@ -1747,7 +1753,7 @@ class ThemeFilterBuilder extends ConjunctionBase {
   /// Example 1: argFields='field1, field2'
   /// Example 2: argFields = ['field1', 'field2']
   @override
-  ThemeFilterBuilder groupBy(dynamic argFields) {
+  AppThemeFilterBuilder groupBy(dynamic argFields) {
     super.groupBy(argFields);
     return this;
   }
@@ -1756,54 +1762,54 @@ class ThemeFilterBuilder extends ConjunctionBase {
   /// Example 1: argFields='name, date'
   /// Example 2: argFields = ['name', 'date']
   @override
-  ThemeFilterBuilder having(dynamic argFields) {
+  AppThemeFilterBuilder having(dynamic argFields) {
     super.having(argFields);
     return this;
   }
 
-  ThemeField _setField(ThemeField? field, String colName, DbType dbtype) {
-    return ThemeField(this)
+  AppThemeField _setField(AppThemeField? field, String colName, DbType dbtype) {
+    return AppThemeField(this)
       ..param = DbParameter(
           dbType: dbtype, columnName: colName, wStartBlock: openedBlock);
   }
 
-  ThemeField? _id;
-  ThemeField get id {
+  AppThemeField? _id;
+  AppThemeField get id {
     return _id = _setField(_id, 'id', DbType.integer);
   }
 
-  ThemeField? _name;
-  ThemeField get name {
+  AppThemeField? _name;
+  AppThemeField get name {
     return _name = _setField(_name, 'name', DbType.text);
   }
 
-  ThemeField? _themeColor;
-  ThemeField get themeColor {
+  AppThemeField? _themeColor;
+  AppThemeField get themeColor {
     return _themeColor = _setField(_themeColor, 'themeColor', DbType.integer);
   }
 
-  /// Deletes List<Theme> bulk by query
+  /// Deletes List<AppTheme> bulk by query
   ///
   /// <returns>BoolResult res.success= true (Deleted), false (Could not be deleted)
   @override
   Future<BoolResult> delete([bool hardDelete = false]) async {
     buildParameters();
     var r = BoolResult(success: false);
-    // Delete sub records where in (Setting) according to DeleteRule.CASCADE
-    final idListSettingBYthemeId = toListPrimaryKeySQL(false);
-    final resSettingBYthemeId = await Setting()
+    // Delete sub records where in (Config) according to DeleteRule.CASCADE
+    final idListConfigBYappThemeId = toListPrimaryKeySQL(false);
+    final resConfigBYappThemeId = await Config()
         .select()
-        .where('themeId IN (${idListSettingBYthemeId['sql']})',
-            parameterValue: idListSettingBYthemeId['args'])
+        .where('appThemeId IN (${idListConfigBYappThemeId['sql']})',
+            parameterValue: idListConfigBYappThemeId['args'])
         .delete(hardDelete);
-    if (!resSettingBYthemeId.success) {
-      return resSettingBYthemeId;
+    if (!resConfigBYappThemeId.success) {
+      return resConfigBYappThemeId;
     }
 
     if (_softDeleteActivated && !hardDelete) {
-      r = await _mnTheme!.updateBatch(qparams, {'isDeleted': 1});
+      r = await _mnAppTheme!.updateBatch(qparams, {'isDeleted': 1});
     } else {
-      r = await _mnTheme!.delete(qparams);
+      r = await _mnAppTheme!.delete(qparams);
     }
     return r;
   }
@@ -1816,41 +1822,41 @@ class ThemeFilterBuilder extends ConjunctionBase {
     buildParameters();
     if (qparams.limit! > 0 || qparams.offset! > 0) {
       qparams.whereString =
-          'id IN (SELECT id from theme ${qparams.whereString!.isNotEmpty ? 'WHERE ${qparams.whereString}' : ''}${qparams.limit! > 0 ? ' LIMIT ${qparams.limit}' : ''}${qparams.offset! > 0 ? ' OFFSET ${qparams.offset}' : ''})';
+          'id IN (SELECT id from appTheme ${qparams.whereString!.isNotEmpty ? 'WHERE ${qparams.whereString}' : ''}${qparams.limit! > 0 ? ' LIMIT ${qparams.limit}' : ''}${qparams.offset! > 0 ? ' OFFSET ${qparams.offset}' : ''})';
     }
-    return _mnTheme!.updateBatch(qparams, values);
+    return _mnAppTheme!.updateBatch(qparams, values);
   }
 
-  /// This method always returns [Theme] Obj if exist, otherwise returns null
+  /// This method always returns [AppTheme] Obj if exist, otherwise returns null
   /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
   /// ex: toSingle(preload:true) -> Loads all related objects
   /// List<String> preloadFields: specify the fields you want to preload (preload parameter's value should also be "true")
   /// ex: toSingle(preload:true, preloadFields:['plField1','plField2'... etc])  -> Loads only certain fields what you specified
   /// bool loadParents: if true, loads all parent objects until the object has no parent
 
-  /// <returns> Theme?
+  /// <returns> AppTheme?
   @override
-  Future<Theme?> toSingle(
+  Future<AppTheme?> toSingle(
       {bool preload = false,
       List<String>? preloadFields,
       bool loadParents = false,
       List<String>? loadedFields}) async {
     buildParameters(pSize: 1);
-    final objFuture = _mnTheme!.toList(qparams);
+    final objFuture = _mnAppTheme!.toList(qparams);
     final data = await objFuture;
-    Theme? obj;
+    AppTheme? obj;
     if (data.isNotEmpty) {
-      obj = Theme.fromMap(data[0] as Map<String, dynamic>);
+      obj = AppTheme.fromMap(data[0] as Map<String, dynamic>);
 
       // RELATIONSHIPS PRELOAD CHILD
       if (preload) {
         loadedFields = loadedFields ?? [];
-        if (/*!_loadedfields!.contains('theme.plSettings') && */ (preloadFields ==
+        if (/*!_loadedfields!.contains('appTheme.plConfigs') && */ (preloadFields ==
                 null ||
-            preloadFields.contains('plSettings'))) {
-          /*_loadedfields!.add('theme.plSettings'); */ obj.plSettings =
-              obj.plSettings ??
-                  await obj.getSettings()!.toList(
+            preloadFields.contains('plConfigs'))) {
+          /*_loadedfields!.add('appTheme.plConfigs'); */ obj.plConfigs =
+              obj.plConfigs ??
+                  await obj.getConfigs()!.toList(
                       preload: preload,
                       preloadFields: preloadFields,
                       loadParents: false /*, loadedFields:_loadedFields*/);
@@ -1862,16 +1868,16 @@ class ThemeFilterBuilder extends ConjunctionBase {
     return obj;
   }
 
-  /// This method always returns [Theme]
+  /// This method always returns [AppTheme]
   /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
   /// ex: toSingle(preload:true) -> Loads all related objects
   /// List<String> preloadFields: specify the fields you want to preload (preload parameter's value should also be "true")
   /// ex: toSingle(preload:true, preloadFields:['plField1','plField2'... etc])  -> Loads only certain fields what you specified
   /// bool loadParents: if true, loads all parent objects until the object has no parent
 
-  /// <returns> Theme?
+  /// <returns> AppTheme?
   @override
-  Future<Theme> toSingleOrDefault(
+  Future<AppTheme> toSingleOrDefault(
       {bool preload = false,
       List<String>? preloadFields,
       bool loadParents = false,
@@ -1881,48 +1887,48 @@ class ThemeFilterBuilder extends ConjunctionBase {
             preloadFields: preloadFields,
             loadParents: loadParents,
             loadedFields: loadedFields) ??
-        Theme();
+        AppTheme();
   }
 
-  /// This method returns int. [Theme]
+  /// This method returns int. [AppTheme]
   /// <returns>int
   @override
-  Future<int> toCount([VoidCallback Function(int c)? themeCount]) async {
+  Future<int> toCount([VoidCallback Function(int c)? appthemeCount]) async {
     buildParameters();
     qparams.selectColumns = ['COUNT(1) AS CNT'];
-    final themesFuture = await _mnTheme!.toList(qparams);
-    final int count = themesFuture[0]['CNT'] as int;
-    if (themeCount != null) {
-      themeCount(count);
+    final appthemesFuture = await _mnAppTheme!.toList(qparams);
+    final int count = appthemesFuture[0]['CNT'] as int;
+    if (appthemeCount != null) {
+      appthemeCount(count);
     }
     return count;
   }
 
-  /// This method returns List<Theme> [Theme]
+  /// This method returns List<AppTheme> [AppTheme]
   /// bool preload: if true, loads all related child objects (Set preload to true if you want to load all fields related to child or parent)
   /// ex: toList(preload:true) -> Loads all related objects
   /// List<String> preloadFields: specify the fields you want to preload (preload parameter's value should also be "true")
   /// ex: toList(preload:true, preloadFields:['plField1','plField2'... etc])  -> Loads only certain fields what you specified
   /// bool loadParents: if true, loads all parent objects until the object has no parent
 
-  /// <returns>List<Theme>
+  /// <returns>List<AppTheme>
   @override
-  Future<List<Theme>> toList(
+  Future<List<AppTheme>> toList(
       {bool preload = false,
       List<String>? preloadFields,
       bool loadParents = false,
       List<String>? loadedFields}) async {
     final data = await toMapList();
-    final List<Theme> themesData = await Theme.fromMapList(data,
+    final List<AppTheme> appthemesData = await AppTheme.fromMapList(data,
         preload: preload,
         preloadFields: preloadFields,
         loadParents: loadParents,
         loadedFields: loadedFields,
         setDefaultValues: qparams.selectColumns == null);
-    return themesData;
+    return appthemesData;
   }
 
-  /// This method returns Json String [Theme]
+  /// This method returns Json String [AppTheme]
   @override
   Future<String> toJson() async {
     final list = <dynamic>[];
@@ -1933,7 +1939,7 @@ class ThemeFilterBuilder extends ConjunctionBase {
     return json.encode(list);
   }
 
-  /// This method returns Json String. [Theme]
+  /// This method returns Json String. [AppTheme]
   @override
   Future<String> toJsonWithChilds() async {
     final list = <dynamic>[];
@@ -1944,31 +1950,32 @@ class ThemeFilterBuilder extends ConjunctionBase {
     return json.encode(list);
   }
 
-  /// This method returns List<dynamic>. [Theme]
+  /// This method returns List<dynamic>. [AppTheme]
   /// <returns>List<dynamic>
   @override
   Future<List<dynamic>> toMapList() async {
     buildParameters();
-    return await _mnTheme!.toList(qparams);
+    return await _mnAppTheme!.toList(qparams);
   }
 
-  /// Returns List<DropdownMenuItem<Theme>>
-  Future<List<DropdownMenuItem<Theme>>> toDropDownMenu(String displayTextColumn,
-      [VoidCallback Function(List<DropdownMenuItem<Theme>> o)?
+  /// Returns List<DropdownMenuItem<AppTheme>>
+  Future<List<DropdownMenuItem<AppTheme>>> toDropDownMenu(
+      String displayTextColumn,
+      [VoidCallback Function(List<DropdownMenuItem<AppTheme>> o)?
           dropDownMenu]) async {
     buildParameters();
-    final themesFuture = _mnTheme!.toList(qparams);
+    final appthemesFuture = _mnAppTheme!.toList(qparams);
 
-    final data = await themesFuture;
+    final data = await appthemesFuture;
     final int count = data.length;
-    final List<DropdownMenuItem<Theme>> items = []..add(DropdownMenuItem(
-        value: Theme(),
+    final List<DropdownMenuItem<AppTheme>> items = []..add(DropdownMenuItem(
+        value: AppTheme(),
         child: Text('-'),
       ));
     for (int i = 0; i < count; i++) {
       items.add(
         DropdownMenuItem(
-          value: Theme.fromMap(data[i] as Map<String, dynamic>),
+          value: AppTheme.fromMap(data[i] as Map<String, dynamic>),
           child: Text(data[i][displayTextColumn].toString()),
         ),
       );
@@ -1986,9 +1993,9 @@ class ThemeFilterBuilder extends ConjunctionBase {
           dropDownMenu]) async {
     buildParameters();
     qparams.selectColumns = ['id', displayTextColumn];
-    final themesFuture = _mnTheme!.toList(qparams);
+    final appthemesFuture = _mnAppTheme!.toList(qparams);
 
-    final data = await themesFuture;
+    final data = await appthemesFuture;
     final int count = data.length;
     final List<DropdownMenuItem<int>> items = []..add(DropdownMenuItem(
         value: 0,
@@ -2008,7 +2015,7 @@ class ThemeFilterBuilder extends ConjunctionBase {
     return items;
   }
 
-  /// This method returns Primary Key List SQL and Parameters retVal = Map<String,dynamic>. [Theme]
+  /// This method returns Primary Key List SQL and Parameters retVal = Map<String,dynamic>. [AppTheme]
   /// retVal['sql'] = SQL statement string, retVal['args'] = whereArguments List<dynamic>;
   /// <returns>List<String>
   @override
@@ -2017,7 +2024,7 @@ class ThemeFilterBuilder extends ConjunctionBase {
     if (buildParams) {
       buildParameters();
     }
-    _retVal['sql'] = 'SELECT `id` FROM theme WHERE ${qparams.whereString}';
+    _retVal['sql'] = 'SELECT `id` FROM appTheme WHERE ${qparams.whereString}';
     _retVal['args'] = qparams.whereArguments;
     return _retVal;
   }
@@ -2031,7 +2038,7 @@ class ThemeFilterBuilder extends ConjunctionBase {
     }
     final List<int> idData = <int>[];
     qparams.selectColumns = ['id'];
-    final idFuture = await _mnTheme!.toList(qparams);
+    final idFuture = await _mnAppTheme!.toList(qparams);
 
     final int count = idFuture.length;
     for (int i = 0; i < count; i++) {
@@ -2040,13 +2047,13 @@ class ThemeFilterBuilder extends ConjunctionBase {
     return idData;
   }
 
-  /// Returns List<dynamic> for selected columns. Use this method for 'groupBy' with min,max,avg..  [Theme]
+  /// Returns List<dynamic> for selected columns. Use this method for 'groupBy' with min,max,avg..  [AppTheme]
   /// Sample usage: (see EXAMPLE 4.2 at https://github.com/hhtokpinar/sqfEntity#group-by)
   @override
   Future<List<dynamic>> toListObject() async {
     buildParameters();
 
-    final objectFuture = _mnTheme!.toList(qparams);
+    final objectFuture = _mnAppTheme!.toList(qparams);
 
     final List<dynamic> objectsData = <dynamic>[];
     final data = await objectFuture;
@@ -2058,13 +2065,13 @@ class ThemeFilterBuilder extends ConjunctionBase {
   }
 
   /// Returns List<String> for selected first column
-  /// Sample usage: await Theme.select(columnsToSelect: ['columnName']).toListString()
+  /// Sample usage: await AppTheme.select(columnsToSelect: ['columnName']).toListString()
   @override
   Future<List<String>> toListString(
       [VoidCallback Function(List<String> o)? listString]) async {
     buildParameters();
 
-    final objectFuture = _mnTheme!.toList(qparams);
+    final objectFuture = _mnAppTheme!.toList(qparams);
 
     final List<String> objectsData = <String>[];
     final data = await objectFuture;
@@ -2078,10 +2085,10 @@ class ThemeFilterBuilder extends ConjunctionBase {
     return objectsData;
   }
 }
-// endregion ThemeFilterBuilder
+// endregion AppThemeFilterBuilder
 
-// region ThemeFields
-class ThemeFields {
+// region AppThemeFields
+class AppThemeFields {
   static TableField? _fId;
   static TableField get id {
     return _fId = _fId ?? SqlSyntax.setField(_fId, 'id', DbType.integer);
@@ -2098,31 +2105,31 @@ class ThemeFields {
         SqlSyntax.setField(_fThemeColor, 'themeColor', DbType.integer);
   }
 }
-// endregion ThemeFields
+// endregion AppThemeFields
 
-//region ThemeManager
-class ThemeManager extends SqfEntityProvider {
-  ThemeManager()
+//region AppThemeManager
+class AppThemeManager extends SqfEntityProvider {
+  AppThemeManager()
       : super(VcareDbModel(),
             tableName: _tableName,
             primaryKeyList: _primaryKeyList,
             whereStr: _whereStr);
-  static const String _tableName = 'theme';
+  static const String _tableName = 'appTheme';
   static const List<String> _primaryKeyList = ['id'];
   static const String _whereStr = 'id=?';
 }
 
-//endregion ThemeManager
+//endregion AppThemeManager
 // region Token
 class Token extends TableBase {
   Token({this.token, this.refreshToken}) {
     _setDefaultValues();
     softDeleteActivated = false;
   }
-  Token.withFields(this.token, this.refreshToken, this._settingId) {
+  Token.withFields(this.token, this.refreshToken, this._configId) {
     _setDefaultValues();
   }
-  Token.withId(this.token, this.refreshToken, this._settingId) {
+  Token.withId(this.token, this.refreshToken, this._configId) {
     _setDefaultValues();
   }
   // fromMap v2.0
@@ -2137,13 +2144,13 @@ class Token extends TableBase {
     if (o['refreshToken'] != null) {
       refreshToken = o['refreshToken'].toString();
     }
-    _settingId = int.tryParse(o['_settingId'].toString());
+    _configId = int.tryParse(o['_configId'].toString());
   }
   // FIELDS (Token)
   int? id;
   String? token;
   String? refreshToken;
-  int? _settingId;
+  int? _configId;
 
   // end FIELDS (Token)
 
@@ -2165,7 +2172,7 @@ class Token extends TableBase {
     if (refreshToken != null || !forView) {
       map['refreshToken'] = refreshToken;
     }
-    map['_settingId'] = _settingId;
+    map['_configId'] = _configId;
 
     return map;
   }
@@ -2182,7 +2189,7 @@ class Token extends TableBase {
     if (refreshToken != null || !forView) {
       map['refreshToken'] = refreshToken;
     }
-    map['_settingId'] = _settingId;
+    map['_configId'] = _configId;
 
     return map;
   }
@@ -2201,12 +2208,12 @@ class Token extends TableBase {
 
   @override
   List<dynamic> toArgs() {
-    return [token, refreshToken, _settingId];
+    return [token, refreshToken, _configId];
   }
 
   @override
   List<dynamic> toArgsWithIds() {
-    return [token, refreshToken, _settingId];
+    return [token, refreshToken, _configId];
   }
 
   static Future<List<Token>?> fromWebUrl(Uri uri,
@@ -2320,8 +2327,8 @@ class Token extends TableBase {
   Future<int?> upsert({bool ignoreBatch = true}) async {
     try {
       final result = await _mnToken.rawInsert(
-          'INSERT OR REPLACE INTO token ( token, refreshToken, _settingId)  VALUES (?,?,?)',
-          [token, refreshToken, _settingId],
+          'INSERT OR REPLACE INTO token ( token, refreshToken, _configId)  VALUES (?,?,?)',
+          [token, refreshToken, _configId],
           ignoreBatch);
       if (result! > 0) {
         saveResult = BoolResult(
@@ -2599,9 +2606,9 @@ class TokenFilterBuilder extends ConjunctionBase {
         _setField(_refreshToken, 'refreshToken', DbType.text);
   }
 
-  TokenField? __settingId;
-  TokenField get _settingId {
-    return __settingId = _setField(__settingId, '_settingId', DbType.integer);
+  TokenField? __configId;
+  TokenField get _configId {
+    return __configId = _setField(__configId, '_configId', DbType.integer);
   }
 
   /// Deletes List<Token> bulk by query
@@ -2917,41 +2924,41 @@ class VcareDbModelSequenceManager extends SqfEntityProvider {
 // END OF ENTITIES
 
 // BEGIN CONTROLLERS
-// BEGIN CONTROLLER (Setting)
-class SettingToTokenControllerSub extends TokenController {
-  static String relationshipFieldName = '_settingId';
+// BEGIN CONTROLLER (Config)
+class ConfigToTokenControllerSub extends TokenController {
+  static String relationshipFieldName = '_configId';
   static String primaryKeyName = 'id';
   static bool useSoftDeleting = false;
   //static String formListTitleField = 'baseUrl';
   //static String formListSubTitleField = 'name';
 }
 
-class SettingController extends Setting {
+class ConfigController extends Config {
   String formListTitleField = 'baseUrl';
   String formListSubTitleField = 'name';
   static SQFViewList getController = SQFViewList(
-    SettingController(),
+    ConfigController(),
     primaryKeyName: 'id',
     useSoftDeleting: false,
   );
   Map<String, String> subMenu() {
     final menu = <String, String>{};
-    menu['SettingToToken'] = 'Setting To Token(_settingId)';
+    menu['ConfigToToken'] = 'Config To Token(_configId)';
 
     return menu;
   }
 
   SQFViewList? subList(int id, String controllerName) {
     switch (controllerName) {
-      case 'SettingToToken':
+      case 'ConfigToToken':
         return SQFViewList(
-          SettingToTokenControllerSub(),
-          primaryKeyName: SettingToTokenControllerSub.primaryKeyName,
-          useSoftDeleting: SettingToTokenControllerSub.useSoftDeleting,
+          ConfigToTokenControllerSub(),
+          primaryKeyName: ConfigToTokenControllerSub.primaryKeyName,
+          useSoftDeleting: ConfigToTokenControllerSub.useSoftDeleting,
           //formListTitleField: 'baseUrl',
           //formListSubTitleField: 'name',
           filterExpression:
-              '${SettingToTokenControllerSub.relationshipFieldName}=?',
+              '${ConfigToTokenControllerSub.relationshipFieldName}=?',
           filterParameter: id,
         );
 
@@ -2961,48 +2968,48 @@ class SettingController extends Setting {
   }
 
   Future<Widget> gotoEdit(dynamic obj) async {
-    return SettingAdd(obj == null
-        ? Setting()
-        : await Setting().getById(obj['id'] as int) ?? Setting());
+    return ConfigAdd(obj == null
+        ? Config()
+        : await Config().getById(obj['id'] as int) ?? Config());
   }
 }
-// END CONTROLLER (Setting)
+// END CONTROLLER (Config)
 
-// BEGIN CONTROLLER (Theme)
-class ThemeToSettingControllerSub extends SettingController {
-  static String relationshipFieldName = 'themeId';
+// BEGIN CONTROLLER (AppTheme)
+class AppThemeToConfigControllerSub extends ConfigController {
+  static String relationshipFieldName = 'appThemeId';
   static String primaryKeyName = 'id';
   static bool useSoftDeleting = false;
   //static String formListTitleField = 'name';
   //static String formListSubTitleField = 'themeColor';
 }
 
-class ThemeController extends Theme {
+class AppThemeController extends AppTheme {
   String formListTitleField = 'name';
   String formListSubTitleField = 'themeColor';
   static SQFViewList getController = SQFViewList(
-    ThemeController(),
+    AppThemeController(),
     primaryKeyName: 'id',
     useSoftDeleting: false,
   );
   Map<String, String> subMenu() {
     final menu = <String, String>{};
-    menu['ThemeToSetting'] = 'Theme To Setting(themeId)';
+    menu['AppThemeToConfig'] = 'AppTheme To Config(appThemeId)';
 
     return menu;
   }
 
   SQFViewList? subList(int id, String controllerName) {
     switch (controllerName) {
-      case 'ThemeToSetting':
+      case 'AppThemeToConfig':
         return SQFViewList(
-          ThemeToSettingControllerSub(),
-          primaryKeyName: ThemeToSettingControllerSub.primaryKeyName,
-          useSoftDeleting: ThemeToSettingControllerSub.useSoftDeleting,
+          AppThemeToConfigControllerSub(),
+          primaryKeyName: AppThemeToConfigControllerSub.primaryKeyName,
+          useSoftDeleting: AppThemeToConfigControllerSub.useSoftDeleting,
           //formListTitleField: 'name',
           //formListSubTitleField: 'themeColor',
           filterExpression:
-              '${ThemeToSettingControllerSub.relationshipFieldName}=?',
+              '${AppThemeToConfigControllerSub.relationshipFieldName}=?',
           filterParameter: id,
         );
 
@@ -3012,12 +3019,12 @@ class ThemeController extends Theme {
   }
 
   Future<Widget> gotoEdit(dynamic obj) async {
-    return ThemeAdd(obj == null
-        ? Theme()
-        : await Theme().getById(obj['id'] as int) ?? Theme());
+    return AppThemeAdd(obj == null
+        ? AppTheme()
+        : await AppTheme().getById(obj['id'] as int) ?? AppTheme());
   }
 }
-// END CONTROLLER (Theme)
+// END CONTROLLER (AppTheme)
 
 // BEGIN CONTROLLER (Token)
 

@@ -23,17 +23,22 @@ class MessageLookup extends MessageLookupByLibrary {
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "appName": MessageLookupByLibrary.simpleMessage("Vcare"),
-        "changeTheme": MessageLookupByLibrary.simpleMessage("Change theme"),
+        "cannotCommunity": MessageLookupByLibrary.simpleMessage(
+            "Cannot get community information"),
         "clickLogin": MessageLookupByLibrary.simpleMessage("Click login"),
+        "communityExists": MessageLookupByLibrary.simpleMessage(
+            "The community already exists "),
         "communityUrl": MessageLookupByLibrary.simpleMessage("Community URL"),
         "communityUrlPlaceholder":
             MessageLookupByLibrary.simpleMessage("Please enter community URL"),
+        "completed": MessageLookupByLibrary.simpleMessage("Completed"),
         "darkMode": MessageLookupByLibrary.simpleMessage("Dark mode"),
         "home": MessageLookupByLibrary.simpleMessage("Home"),
         "joinCommunity":
             MessageLookupByLibrary.simpleMessage("Join the community"),
         "login": MessageLookupByLibrary.simpleMessage("Login"),
         "mine": MessageLookupByLibrary.simpleMessage("Mine"),
+        "nextStep": MessageLookupByLibrary.simpleMessage("Next step"),
         "notLogin": MessageLookupByLibrary.simpleMessage("Not login"),
         "password": MessageLookupByLibrary.simpleMessage("Password"),
         "passwordAgain":
@@ -42,7 +47,12 @@ class MessageLookup extends MessageLookupByLibrary {
             "Please enter your password again"),
         "passwordPlaceholder":
             MessageLookupByLibrary.simpleMessage("Please enter your password"),
+        "regexpInternetUrl":
+            MessageLookupByLibrary.simpleMessage("The URL is incorrect"),
         "register": MessageLookupByLibrary.simpleMessage("Register"),
+        "theme": MessageLookupByLibrary.simpleMessage("Select a theme"),
+        "themeColor": MessageLookupByLibrary.simpleMessage("Theme color"),
+        "themeSettings": MessageLookupByLibrary.simpleMessage("Theme setting"),
         "username": MessageLookupByLibrary.simpleMessage("Username"),
         "usernamePlaceholder":
             MessageLookupByLibrary.simpleMessage("Please enter your username")

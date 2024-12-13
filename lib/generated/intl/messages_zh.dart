@@ -23,23 +23,30 @@ class MessageLookup extends MessageLookupByLibrary {
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "appName": MessageLookupByLibrary.simpleMessage("微惗"),
-        "changeTheme": MessageLookupByLibrary.simpleMessage("切换主题"),
+        "cannotCommunity": MessageLookupByLibrary.simpleMessage("无法获取到社区资源信息"),
         "clickLogin": MessageLookupByLibrary.simpleMessage("点击登录"),
+        "communityExists": MessageLookupByLibrary.simpleMessage("社区已存在"),
         "communityUrl": MessageLookupByLibrary.simpleMessage("社区URL"),
         "communityUrlPlaceholder":
             MessageLookupByLibrary.simpleMessage("请输入社区URL"),
-        "darkMode": MessageLookupByLibrary.simpleMessage("夜间模式"),
+        "completed": MessageLookupByLibrary.simpleMessage("完成"),
+        "darkMode": MessageLookupByLibrary.simpleMessage("深色模式"),
         "home": MessageLookupByLibrary.simpleMessage("首页"),
         "joinCommunity": MessageLookupByLibrary.simpleMessage("加入社区"),
         "login": MessageLookupByLibrary.simpleMessage("登录"),
         "mine": MessageLookupByLibrary.simpleMessage("我的"),
+        "nextStep": MessageLookupByLibrary.simpleMessage("下一步"),
         "notLogin": MessageLookupByLibrary.simpleMessage("未登录"),
         "password": MessageLookupByLibrary.simpleMessage("密码"),
         "passwordAgain": MessageLookupByLibrary.simpleMessage("确认密码"),
         "passwordAgainPlaceholder":
             MessageLookupByLibrary.simpleMessage("请再次输入密码"),
         "passwordPlaceholder": MessageLookupByLibrary.simpleMessage("请输入密码"),
+        "regexpInternetUrl": MessageLookupByLibrary.simpleMessage("URL格式不正确"),
         "register": MessageLookupByLibrary.simpleMessage("注册"),
+        "theme": MessageLookupByLibrary.simpleMessage("主题"),
+        "themeColor": MessageLookupByLibrary.simpleMessage("主题颜色"),
+        "themeSettings": MessageLookupByLibrary.simpleMessage("主题设置"),
         "username": MessageLookupByLibrary.simpleMessage("用户名"),
         "usernamePlaceholder": MessageLookupByLibrary.simpleMessage("请输入用户名")
       };

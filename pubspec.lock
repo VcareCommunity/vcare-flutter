@@ -322,6 +322,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  fluttertoast:
+    dependency: "direct main"
+    description:
+      name: fluttertoast
+      sha256: "95f349437aeebe524ef7d6c9bde3e6b4772717cf46a0eb6a3ceaddc740b297cc"
+      url: "https://pub.dev"
+    source: hosted
+    version: "8.2.8"
   frontend_server_client:
     dependency: transitive
     description:
@@ -346,6 +354,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.2"
+  group_button:
+    dependency: "direct main"
+    description:
+      name: group_button
+      sha256: "0610fcf28ed122bfb4b410fce161a390f7f2531d55d1d65c5375982001415940"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.3.4"
   http:
     dependency: transitive
     description:
@@ -418,6 +434,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.9.0"
+  keyboard_avoider:
+    dependency: "direct main"
+    description:
+      name: keyboard_avoider
+      sha256: d2917bd52c6612bf8d1ff97f74049ddf3592a81d44e814f0e7b07dcfd245b75c
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.0"
   leak_tracker:
     dependency: transitive
     description:
@@ -482,6 +506,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.11.1"
+  matertino_radio:
+    dependency: "direct main"
+    description:
+      name: matertino_radio
+      sha256: e92de7649ad2ad1c86069cfcda85d1f1add0a77eba78ce03a7153c2d94278bd1
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.5"
   meta:
     dependency: transitive
     description:
@@ -519,6 +551,14 @@ packages:
     description:
       name: package_config
       sha256: "1c5b77ccc91e4823a5af61ee74e6b972db1ef98c2ff5a18d3161c982a55448bd"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.0"
+  page_transition:
+    dependency: "direct main"
+    description:
+      name: page_transition
+      sha256: dee976b1f23de9bbef5cd512fe567e9f6278caee11f5eaca9a2115c19dc49ef6
       url: "https://pub.dev"
     source: hosted
     version: "2.1.0"

@@ -1,11 +1,8 @@
 import 'package:chopper/chopper.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-import '../common/response.dart';
-
-part 'config_service.g.dart';
-
 part 'config_service.chopper.dart';
+part 'config_service.g.dart';
 
 @JsonSerializable()
 class ConfigResp {
@@ -24,5 +21,5 @@ abstract class ConfigService extends ChopperService {
       _$ConfigService(client);
 
   @Get(path: "public/config/mobile")
-  Future<Response<ApiResponse<ConfigResp>>> getVcareConfig();
+  Future<Response<Map<String, dynamic>>> getVcareConfig();
 }

@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/intl_localizations.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
-import 'package:vcare_flutter/common/constants.dart';
 import 'package:vcare_flutter/pages/add_community.dart';
-import 'package:vcare_flutter/state/VcareAppState.dart';
+import 'package:vcare_flutter/pages/home.dart';
+import 'package:vcare_flutter/state/vcare_app_state.dart';
+
+import 'common/constants.dart';
 
 void main() {
   runApp(const VcareApp());
@@ -21,41 +25,73 @@ class VcareApp extends StatelessWidget {
 }
 
 ///主题加载
-class MaterialWeight extends StatelessWidget {
+class MaterialWeight extends StatefulWidget {
   const MaterialWeight({super.key});
 
   @override
+  State<MaterialWeight> createState() => _MaterialWeightState();
+}
+
+class _MaterialWeightState extends State<MaterialWeight> {
+  bool _isInitialized = false;
+
+  @override
+  void initState() {
+    super.initState();
+    init();
+  }
+
+  Future<void> init() async {
+    var state = context.read<VcareAppState>();
+    await state.initState();
+    setState(() {
+      _isInitialized = true;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+
+    if (!_isInitialized) {
+      return Center(
+          child: CircularProgressIndicator(
+        color: Color(defaultThemeList[0].themeColor!),
+      ));
+    }
+
     var state = context.watch<VcareAppState>();
 
     var theme = ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
-            seedColor: Color(defaultThemeList[0].themeColor!)),
-        brightness: state.setting.isDark! ? Brightness.dark : Brightness.light,
+          seedColor: Color(state.theme.themeColor!),
+          brightness: state.config.isDark! ? Brightness.dark : Brightness.light,
+        ),
         fontFamily: "HarmonyOS");
 
     Widget content;
-    if (state.setting.baseUrl != null) {
-      content = Text("setting: ${state.setting.toJson()}"
-          "theme:${state.theme.toJson()}");
+    if (state.config.id != null) {
+      content = const Home();
     } else {
       content = const AddCommunity();
     }
 
-    var materialApp = MaterialApp(
+    return MaterialApp(
+        onGenerateRoute: (settings) {
+          switch (settings.name) {
+            case "/community/add":
+              return PageTransition(
+                  child: const AddCommunity(),
+                  type: PageTransitionType.rightToLeft);
+            default:
+              return null;
+          }
+        },
+        builder: FToastBuilder(),
         onGenerateTitle: (context) => AppLocalizations.of(context)!.appName,
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         theme: theme,
-        home: Scaffold(
-            backgroundColor: Theme.of(context).colorScheme.surface,
-            body: content));
-
-    return FutureBuilder(
-        future: state.initState(),
-        builder: (context, snapshot) {
-          return materialApp;
-        });
+        home: content);
   }
 }

@@ -11,6 +11,10 @@
   "@joinCommunity": {
     "description": "加入社区"
   },
+  "cannotCommunity": "Cannot get community information",
+  "@cannotCommunity": {
+    "description": "获取社区信息失败"
+  },
   "home": "Home",
   "@home": {
     "description": "首页"
@@ -35,13 +39,21 @@
   "@notLogin": {
     "description": "未登录"
   },
-  "changeTheme": "Change theme",
-  "@changeTheme": {
-    "description": "切换主题"
+  "theme": "Select a theme",
+  "@theme": {
+    "description": "主题"
+  },
+  "themeColor": "Theme color",
+  "@themeColor": {
+    "description": "主题颜色"
+  },
+  "themeSettings": "Theme setting",
+  "@themeSettings": {
+    "description": "主题设置"
   },
   "darkMode": "Dark mode",
   "@darkMode": {
-    "description": "夜间模式"
+    "description": "深色模式"
   },
   "username": "Username",
   "@username": {
@@ -54,6 +66,10 @@
   "communityUrlPlaceholder": "Please enter community URL",
   "@communityUrlPlaceholder": {
     "description": "请输入社区URL"
+  },
+  "communityExists": "The community already exists ",
+  "@communityExists": {
+    "description": "社区已存在"
   },
   "passwordAgain": "Confirm your password",
   "@passwordAgain": {
@@ -70,5 +86,17 @@
   "passwordAgainPlaceholder": "Please enter your password again",
   "@passwordAgainPlaceholder": {
     "description": "再次输入密码"
+  },
+  "nextStep": "Next step",
+  "@nextStep": {
+    "description": "下一步"
+  },
+  "completed": "Completed",
+  "@completed": {
+    "description": "完成"
+  },
+  "regexpInternetUrl": "The URL is incorrect",
+  "@regexpInternetUrl": {
+    "description": "URL格式不正确"
   }
 }

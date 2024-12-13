@@ -80,6 +80,16 @@ class S {
     );
   }
 
+  /// `Cannot get community information`
+  String get cannotCommunity {
+    return Intl.message(
+      'Cannot get community information',
+      name: 'cannotCommunity',
+      desc: '获取社区信息失败',
+      args: [],
+    );
+  }
+
   /// `Home`
   String get home {
     return Intl.message(
@@ -140,12 +150,32 @@ class S {
     );
   }
 
-  /// `Change theme`
-  String get changeTheme {
+  /// `Select a theme`
+  String get theme {
     return Intl.message(
-      'Change theme',
-      name: 'changeTheme',
-      desc: '切换主题',
+      'Select a theme',
+      name: 'theme',
+      desc: '主题',
+      args: [],
+    );
+  }
+
+  /// `Theme color`
+  String get themeColor {
+    return Intl.message(
+      'Theme color',
+      name: 'themeColor',
+      desc: '主题颜色',
+      args: [],
+    );
+  }
+
+  /// `Theme setting`
+  String get themeSettings {
+    return Intl.message(
+      'Theme setting',
+      name: 'themeSettings',
+      desc: '主题设置',
       args: [],
     );
   }
@@ -155,7 +185,7 @@ class S {
     return Intl.message(
       'Dark mode',
       name: 'darkMode',
-      desc: '夜间模式',
+      desc: '深色模式',
       args: [],
     );
   }
@@ -186,6 +216,16 @@ class S {
       'Please enter community URL',
       name: 'communityUrlPlaceholder',
       desc: '请输入社区URL',
+      args: [],
+    );
+  }
+
+  /// `The community already exists `
+  String get communityExists {
+    return Intl.message(
+      'The community already exists ',
+      name: 'communityExists',
+      desc: '社区已存在',
       args: [],
     );
   }
@@ -226,6 +266,36 @@ class S {
       'Please enter your password again',
       name: 'passwordAgainPlaceholder',
       desc: '再次输入密码',
+      args: [],
+    );
+  }
+
+  /// `Next step`
+  String get nextStep {
+    return Intl.message(
+      'Next step',
+      name: 'nextStep',
+      desc: '下一步',
+      args: [],
+    );
+  }
+
+  /// `Completed`
+  String get completed {
+    return Intl.message(
+      'Completed',
+      name: 'completed',
+      desc: '完成',
+      args: [],
+    );
+  }
+
+  /// `The URL is incorrect`
+  String get regexpInternetUrl {
+    return Intl.message(
+      'The URL is incorrect',
+      name: 'regexpInternetUrl',
+      desc: 'URL格式不正确',
       args: [],
     );
   }
