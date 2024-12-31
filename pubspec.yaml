@@ -8,6 +8,7 @@ environment:
 dependencies:
   cupertino_icons: ^1.0.8
   chopper: ^8.0.3
+  easy_avatar: ^3.0.0
   extended_image: ^8.3.0
   flutter:
     sdk: flutter

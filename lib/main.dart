@@ -51,7 +51,6 @@ class _MaterialWeightState extends State<MaterialWeight> {
 
   @override
   Widget build(BuildContext context) {
-
     if (!_isInitialized) {
       return Center(
           child: CircularProgressIndicator(
@@ -61,12 +60,15 @@ class _MaterialWeightState extends State<MaterialWeight> {
 
     var state = context.watch<VcareAppState>();
 
+    var colorScheme = ColorScheme.fromSeed(
+      seedColor: Color(state.theme.themeColor!),
+      brightness: state.config.isDark! ? Brightness.dark : Brightness.light,
+    );
+
     var theme = ThemeData(
         useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Color(state.theme.themeColor!),
-          brightness: state.config.isDark! ? Brightness.dark : Brightness.light,
-        ),
+        colorScheme: colorScheme,
+        appBarTheme: AppBarTheme(color: colorScheme.primaryContainer),
         fontFamily: "HarmonyOS");
 
     Widget content;
@@ -83,6 +85,9 @@ class _MaterialWeightState extends State<MaterialWeight> {
               return PageTransition(
                   child: const AddCommunity(),
                   type: PageTransitionType.rightToLeft);
+            case "/home":
+              return PageTransition(
+                  child: const Home(), type: PageTransitionType.rightToLeft);
             default:
               return null;
           }

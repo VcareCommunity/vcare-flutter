@@ -298,6 +298,9 @@ class _AddThemeConfigState extends State<AddThemeConfig> {
                   onPressed: () async {
                     await state.config.save();
                     await Prefs.setConfigId(state.config.id!);
+                    if (context.mounted) {
+                      Navigator.pushReplacementNamed(context, "/home");
+                    }
                   },
                   child: Text(AppLocalizations.of(context)!.completed))
             ]));
@@ -309,6 +312,7 @@ class _AddThemeConfigState extends State<AddThemeConfig> {
         appBar: AppBar(
           title: Text(AppLocalizations.of(context)!.themeSettings),
           backgroundColor: Theme.of(context).colorScheme.primary,
+          centerTitle: true,
         ),
         body: KeyboardAvoider(
           child: LayoutBuilder(builder: (context, constraint) {
