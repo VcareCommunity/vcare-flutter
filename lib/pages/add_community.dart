@@ -14,8 +14,6 @@ import 'package:vcare_flutter/prefs/prefs.dart';
 import 'package:vcare_flutter/state/vcare_app_state.dart';
 import 'package:vcare_flutter/tools/regexp.dart';
 
-final _formKey = GlobalKey<FormState>();
-
 class AddCommunity extends StatefulWidget {
   const AddCommunity({
     super.key,
@@ -29,6 +27,7 @@ class _AddCommunityState extends State<AddCommunity> {
   late FToast fToast;
   late int? oldConfigId;
   String communityUrl = "https://www.natane.top/api";
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {

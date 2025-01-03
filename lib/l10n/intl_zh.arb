@@ -1,8 +1,9 @@
 {
   "appName": "微惗",
   "communityUrl": "社区URL",
-  "joinCommunity": "加入社区",
+  "joinCommunity": "进入社区",
   "cannotCommunity": "无法获取到社区资源信息",
+  "exitCommunity": "退出社区",
   "home": "首页",
   "mine": "我的",
   "login": "登录",

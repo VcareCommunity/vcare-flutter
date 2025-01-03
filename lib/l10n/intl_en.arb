@@ -9,11 +9,15 @@
   },
   "joinCommunity": "Join the community",
   "@joinCommunity": {
-    "description": "加入社区"
+    "description": "进入社区"
   },
   "cannotCommunity": "Cannot get community information",
   "@cannotCommunity": {
     "description": "获取社区信息失败"
+  },
+  "exitCommunity": "Exit the community",
+  "@exitCommunity": {
+    "description": "退出社区"
   },
   "home": "Home",
   "@home": {

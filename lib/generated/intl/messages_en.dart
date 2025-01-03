@@ -33,6 +33,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Please enter community URL"),
         "completed": MessageLookupByLibrary.simpleMessage("Completed"),
         "darkMode": MessageLookupByLibrary.simpleMessage("Dark mode"),
+        "exitCommunity":
+            MessageLookupByLibrary.simpleMessage("Exit the community"),
         "home": MessageLookupByLibrary.simpleMessage("Home"),
         "joinCommunity":
             MessageLookupByLibrary.simpleMessage("Join the community"),

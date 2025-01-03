@@ -75,7 +75,7 @@ class S {
     return Intl.message(
       'Join the community',
       name: 'joinCommunity',
-      desc: '加入社区',
+      desc: '进入社区',
       args: [],
     );
   }
@@ -86,6 +86,16 @@ class S {
       'Cannot get community information',
       name: 'cannotCommunity',
       desc: '获取社区信息失败',
+      args: [],
+    );
+  }
+
+  /// `Exit the community`
+  String get exitCommunity {
+    return Intl.message(
+      'Exit the community',
+      name: 'exitCommunity',
+      desc: '退出社区',
       args: [],
     );
   }
