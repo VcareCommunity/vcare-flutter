@@ -100,6 +100,16 @@ class S {
     );
   }
 
+  /// `Switch communities`
+  String get switchCommunity {
+    return Intl.message(
+      'Switch communities',
+      name: 'switchCommunity',
+      desc: '切换社区',
+      args: [],
+    );
+  }
+
   /// `Home`
   String get home {
     return Intl.message(

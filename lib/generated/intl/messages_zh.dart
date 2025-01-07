@@ -45,6 +45,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "passwordPlaceholder": MessageLookupByLibrary.simpleMessage("请输入密码"),
         "regexpInternetUrl": MessageLookupByLibrary.simpleMessage("URL格式不正确"),
         "register": MessageLookupByLibrary.simpleMessage("注册"),
+        "switchCommunity": MessageLookupByLibrary.simpleMessage("切换社区"),
         "theme": MessageLookupByLibrary.simpleMessage("主题"),
         "themeColor": MessageLookupByLibrary.simpleMessage("主题颜色"),
         "themeSettings": MessageLookupByLibrary.simpleMessage("主题设置"),

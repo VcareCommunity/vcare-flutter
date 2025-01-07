@@ -16,11 +16,17 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   int selectedIndex = 0;
+  late VcareAppState appState;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    appState = Provider.of<VcareAppState>(context, listen: false);
+  }
 
   @override
   Widget build(BuildContext context) {
-    var state = context.watch<VcareAppState>();
-
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 60,
@@ -47,10 +53,17 @@ class _HomeState extends State<Home> {
               ),
             ),
             ListTile(
+              title: Text(AppLocalizations.of(context)!.switchCommunity),
+              trailing: const Icon(Icons.sync_alt),
+              onTap: () async {
+                await switchCommunity(context);
+              },
+            ),
+            ListTile(
               title: Text(AppLocalizations.of(context)!.exitCommunity),
               trailing: const Icon(Icons.exit_to_app),
               onTap: () async {
-                await logout(context);
+                await logoutCommunity(context);
               },
             ),
             // Add more list tiles if you need
@@ -70,19 +83,22 @@ class _HomeState extends State<Home> {
     );
   }
 
-  logout(BuildContext context) async {
-    var state = Provider.of<VcareAppState>(context, listen: false);
-    var config = state.config;
+  logoutCommunity(BuildContext context) async {
+    var config = appState.config;
     await config.delete();
     await Prefs.deleteConfig();
     var count = await config.select().toCount();
+    appState.initState();
     if (count > 0) {
     } else {
       if (context.mounted) {
-        Navigator.pushReplacementNamed(context, "/community/add");
+        Navigator.of(context)
+            .pushNamedAndRemoveUntil("/community/add", (route) => false);
       }
     }
   }
+
+  switchCommunity(BuildContext context) async {}
 }
 
 class _DrawerHeader extends StatelessWidget {

@@ -52,6 +52,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "regexpInternetUrl":
             MessageLookupByLibrary.simpleMessage("The URL is incorrect"),
         "register": MessageLookupByLibrary.simpleMessage("Register"),
+        "switchCommunity":
+            MessageLookupByLibrary.simpleMessage("Switch communities"),
         "theme": MessageLookupByLibrary.simpleMessage("Select a theme"),
         "themeColor": MessageLookupByLibrary.simpleMessage("Theme color"),
         "themeSettings": MessageLookupByLibrary.simpleMessage("Theme setting"),

@@ -44,6 +44,11 @@ class VcareAppState extends ChangeNotifier {
     if (configId != null) {
       config = (await config.getById(configId))!;
       theme = (await config.getAppTheme())!;
+      changeDarkMode(config.isDark ?? false);
+    } else {
+      config = defaultConfig;
+      theme = defaultThemeList[0];
+      changeDarkMode(false);
     }
     notifyListeners();
   }

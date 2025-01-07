@@ -19,6 +19,10 @@
   "@exitCommunity": {
     "description": "退出社区"
   },
+  "switchCommunity": "Switch communities",
+  "@switchCommunity": {
+    "description": "切换社区"
+  },
   "home": "Home",
   "@home": {
     "description": "首页"

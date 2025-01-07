@@ -25,26 +25,17 @@ class AddCommunity extends StatefulWidget {
 
 class _AddCommunityState extends State<AddCommunity> {
   late FToast fToast;
-  late int? oldConfigId;
-  String communityUrl = "https://www.natane.top/api";
+
+  late VcareAppState appState;
+  String communityUrl = "http://127.0.0.1:9090";
   final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
     super.initState();
-    var state = Provider.of<VcareAppState>(context, listen: false);
-    oldConfigId = state.config.id;
     fToast = FToast();
     fToast.init(context);
-  }
-
-  @override
-  void dispose() async {
-    super.dispose();
-    if (oldConfigId != null) {
-      var state = context.watch<VcareAppState>();
-      await state.changeConfigById(oldConfigId);
-    }
+    appState = Provider.of<VcareAppState>(context, listen: false);
   }
 
   _getCommunityToast() {
@@ -126,7 +117,10 @@ class _AddCommunityState extends State<AddCommunity> {
                         if (_formKey.currentState!.validate()) {
                           _formKey.currentState!.save();
                           var configInfo = await getConfigInfo(communityUrl);
-                          if (await checkConfig(configInfo)) {
+                          if (await checkConfig(configInfo) &&
+                              context.mounted) {
+                            var state = Provider.of<VcareAppState>(context,
+                                listen: false);
                             state.config.baseUrl = communityUrl;
                             state.config.name = configInfo!.community;
                             state.config.version = configInfo.version;
@@ -230,6 +224,9 @@ class AddThemeConfig extends StatefulWidget {
 }
 
 class _AddThemeConfigState extends State<AddThemeConfig> {
+  bool darkMode = false;
+  int themeId = 1;
+
   @override
   Widget build(BuildContext context) {
     var state = context.watch<VcareAppState>();
@@ -243,8 +240,9 @@ class _AddThemeConfigState extends State<AddThemeConfig> {
           style: const TextStyle(fontSize: 16),
         ),
         Switch(
-            value: state.config.isDark!,
+            value: darkMode,
             onChanged: (value) async {
+              darkMode = value;
               await state.changeDarkMode(value);
             })
       ],
@@ -264,14 +262,15 @@ class _AddThemeConfigState extends State<AddThemeConfig> {
             children: List.generate(defaultThemeList.length, (index) {
               return MatertinoRadioListTile(
                 value: index,
-                groupValue: state.config.appThemeId! - 1,
+                groupValue: themeId - 1,
                 title: defaultThemeList[index].name!,
                 trailingWidget: Container(
                     width: 30,
                     height: 15,
                     color: Color(defaultThemeList[index].themeColor!)),
                 onChanged: (value) async {
-                  await state.changeThemeById(value! + 1);
+                  themeId = value! + 1;
+                  await state.changeThemeById(themeId);
                 },
                 tileColor: Colors.transparent,
               );
