@@ -1,7 +1,7 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:chopper/chopper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/intl_localizations.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:keyboard_avoider/keyboard_avoider.dart';
 import 'package:matertino_radio/matertino_radio.dart';
 import 'package:page_transition/page_transition.dart';
@@ -24,48 +24,26 @@ class AddCommunity extends StatefulWidget {
 }
 
 class _AddCommunityState extends State<AddCommunity> {
-  late FToast fToast;
-
   late VcareAppState appState;
-  String communityUrl = "http://127.0.0.1:9090";
+  String communityUrl = "https://natane.top/api";
   final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
     super.initState();
-    fToast = FToast();
-    fToast.init(context);
     appState = Provider.of<VcareAppState>(context, listen: false);
   }
 
   _getCommunityToast() {
-    fToast.showToast(
-        gravity: ToastGravity.BOTTOM,
-        child: Container(
-          padding: const EdgeInsets.only(top: 3, bottom: 3, left: 5, right: 5),
-          decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primaryContainer,
-              borderRadius: BorderRadius.circular(8)),
-          child: Text(
-            AppLocalizations.of(context)!.cannotCommunity,
-            style: TextStyle(color: Theme.of(context).colorScheme.primary),
-          ),
-        ));
+    BotToast.showText(
+      text: AppLocalizations.of(context)!.cannotCommunity,
+    );
   }
 
   _communityExistToast() {
-    fToast.showToast(
-        gravity: ToastGravity.BOTTOM,
-        child: Container(
-            padding:
-                const EdgeInsets.only(top: 3, bottom: 3, left: 5, right: 5),
-            decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primaryContainer,
-                borderRadius: BorderRadius.circular(8)),
-            child: Text(
-              AppLocalizations.of(context)!.communityExists,
-              style: TextStyle(color: Theme.of(context).colorScheme.primary),
-            )));
+    BotToast.showText(
+      text: AppLocalizations.of(context)!.communityExists,
+    );
   }
 
   @override
@@ -129,7 +107,7 @@ class _AddCommunityState extends State<AddCommunity> {
                               Navigator.push(
                                   context,
                                   PageTransition(
-                                      child: const AddThemeConfig(),
+                                      child: const ThemeConfig(),
                                       type: PageTransitionType.rightToLeft));
                             }
                           }
@@ -147,7 +125,7 @@ class _AddCommunityState extends State<AddCommunity> {
     return Scaffold(
         appBar: AppBar(
           title: Text(AppLocalizations.of(context)!.joinCommunity),
-          backgroundColor: Theme.of(context).colorScheme.primary,
+          backgroundColor: Theme.of(context).colorScheme.primaryContainer,
         ),
         body: KeyboardAvoider(
           child: Form(
@@ -186,6 +164,7 @@ class _AddCommunityState extends State<AddCommunity> {
     try {
       configResp = await configService.getVcareConfig();
     } catch (e) {
+      chopperLogger.severe("request error", e);
       return null;
     }
     if (configResp.statusCode == 200 &&
@@ -216,14 +195,14 @@ class _AddCommunityState extends State<AddCommunity> {
   }
 }
 
-class AddThemeConfig extends StatefulWidget {
-  const AddThemeConfig({super.key});
+class ThemeConfig extends StatefulWidget {
+  const ThemeConfig({super.key});
 
   @override
-  State<AddThemeConfig> createState() => _AddThemeConfigState();
+  State<ThemeConfig> createState() => _ThemeConfigState();
 }
 
-class _AddThemeConfigState extends State<AddThemeConfig> {
+class _ThemeConfigState extends State<ThemeConfig> {
   bool darkMode = false;
   int themeId = 1;
 
@@ -297,7 +276,7 @@ class _AddThemeConfigState extends State<AddThemeConfig> {
                     await state.config.save();
                     await Prefs.setConfigId(state.config.id!);
                     if (context.mounted) {
-                      Navigator.pushReplacementNamed(context, "/home");
+                      Navigator.pushReplacementNamed(context, nav);
                     }
                   },
                   child: Text(AppLocalizations.of(context)!.completed))
@@ -309,7 +288,7 @@ class _AddThemeConfigState extends State<AddThemeConfig> {
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
           title: Text(AppLocalizations.of(context)!.themeSettings),
-          backgroundColor: Theme.of(context).colorScheme.primary,
+          backgroundColor: Theme.of(context).colorScheme.primaryContainer,
           centerTitle: true,
         ),
         body: KeyboardAvoider(

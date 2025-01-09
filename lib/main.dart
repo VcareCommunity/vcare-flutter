@@ -1,10 +1,11 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/intl_localizations.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
-import 'package:vcare_flutter/pages/add_community.dart';
-import 'package:vcare_flutter/pages/home.dart';
+import 'package:vcare_flutter/pages/community/add_community.dart';
+import 'package:vcare_flutter/pages/community/switch_community.dart';
+import 'package:vcare_flutter/pages/nav.dart';
 import 'package:vcare_flutter/state/vcare_app_state.dart';
 
 import 'common/constants.dart';
@@ -66,6 +67,7 @@ class _MaterialWeightState extends State<MaterialWeight> {
     );
 
     var theme = ThemeData(
+        splashFactory: NoSplash.splashFactory,
         useMaterial3: true,
         colorScheme: colorScheme,
         appBarTheme: AppBarTheme(color: colorScheme.primaryContainer),
@@ -73,26 +75,38 @@ class _MaterialWeightState extends State<MaterialWeight> {
 
     Widget content;
     if (state.config.id != null) {
-      content = const Home();
+      content = const NavPage();
     } else {
       content = const AddCommunity();
     }
 
     return MaterialApp(
         onGenerateRoute: (settings) {
-          switch (settings.name) {
-            case "/community/add":
-              return PageTransition(
-                  child: const AddCommunity(),
-                  type: PageTransitionType.rightToLeft);
-            case "/home":
-              return PageTransition(
-                  child: const Home(), type: PageTransitionType.rightToLeft);
-            default:
-              return null;
+          Widget route() {
+            switch (settings.name!) {
+              case nav:
+                {
+                  return const NavPage();
+                }
+              case communityAdd:
+                {
+                  return const AddCommunity();
+                }
+              case communitySwitch:
+                {
+                  return const SwitchCommunity();
+                }
+              default:
+                {
+                  return const Scaffold(body: Text("404"));
+                }
+            }
           }
+
+          return PageTransition(
+              child: route(), type: PageTransitionType.rightToLeft);
         },
-        builder: FToastBuilder(),
+        builder: BotToastInit(),
         onGenerateTitle: (context) => AppLocalizations.of(context)!.appName,
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,

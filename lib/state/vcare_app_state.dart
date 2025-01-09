@@ -15,6 +15,13 @@ class VcareAppState extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> removeCurrentConfig() async {
+    await config.delete();
+    await Prefs.deleteConfig();
+    await initState();
+    notifyListeners();
+  }
+
   Future<void> changeConfigById(int? configId) async {
     if (configId != null) {
       config = (await config.select().id.equals(configId).toSingle())!;
@@ -42,8 +49,8 @@ class VcareAppState extends ChangeNotifier {
     await initTheme();
     var configId = await Prefs.getConfigId();
     if (configId != null) {
-      config = (await config.getById(configId))!;
-      theme = (await config.getAppTheme())!;
+      config = (await config.getById(configId)) ?? defaultConfig;
+      theme = (await config.getAppTheme()) ?? defaultThemeList[0];
       changeDarkMode(config.isDark ?? false);
     } else {
       config = defaultConfig;

@@ -62,7 +62,6 @@ const SqfEntityTable tableToken = SqfEntityTable(
 const SqfEntityModel vcareDbModel = SqfEntityModel(
   modelName: "vcareDbModel",
   databaseName: 'vcare.sqlite',
-  password: null,
   databaseTables: [tableConfig, tableTheme, tableToken],
   formTables: [tableConfig, tableTheme, tableToken],
 );
