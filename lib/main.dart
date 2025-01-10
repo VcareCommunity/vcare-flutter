@@ -67,18 +67,18 @@ class _MaterialWeightState extends State<MaterialWeight> {
     );
 
     var theme = ThemeData(
-        splashFactory: NoSplash.splashFactory,
-        useMaterial3: true,
-        colorScheme: colorScheme,
-        appBarTheme: AppBarTheme(color: colorScheme.primaryContainer),
-        fontFamily: "HarmonyOS");
+      splashFactory: NoSplash.splashFactory,
+      useMaterial3: true,
+      colorScheme: colorScheme,
+      appBarTheme: AppBarTheme(color: colorScheme.primaryContainer),
+    );
 
-    Widget content;
-    if (state.config.id != null) {
-      content = const NavPage();
-    } else {
-      content = const AddCommunity();
-    }
+    Widget content = const AddCommunity();
+    setState(() {
+      if (state.config.id != null) {
+        content = const NavPage();
+      }
+    });
 
     return MaterialApp(
         onGenerateRoute: (settings) {

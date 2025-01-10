@@ -40,8 +40,11 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Join the community"),
         "login": MessageLookupByLibrary.simpleMessage("Login"),
         "mine": MessageLookupByLibrary.simpleMessage("Mine"),
+        "newCommunity": MessageLookupByLibrary.simpleMessage("New communities"),
         "nextStep": MessageLookupByLibrary.simpleMessage("Next step"),
         "notLogin": MessageLookupByLibrary.simpleMessage("Not login"),
+        "notSelectedCommunity":
+            MessageLookupByLibrary.simpleMessage("Please select a community"),
         "password": MessageLookupByLibrary.simpleMessage("Password"),
         "passwordAgain":
             MessageLookupByLibrary.simpleMessage("Confirm your password"),

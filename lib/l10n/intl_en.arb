@@ -23,6 +23,10 @@
   "@switchCommunity": {
     "description": "切换社区"
   },
+  "newCommunity": "New communities",
+  "@newCommunity": {
+    "description": "新的社区"
+  },
   "home": "Home",
   "@home": {
     "description": "首页"
@@ -74,6 +78,10 @@
   "communityUrlPlaceholder": "Please enter community URL",
   "@communityUrlPlaceholder": {
     "description": "请输入社区URL"
+  },
+  "notSelectedCommunity": "Please select a community",
+  "@notSelectedCommunity": {
+    "description": "请选择一个社区"
   },
   "communityExists": "The community already exists ",
   "@communityExists": {

@@ -1,9 +1,13 @@
+import 'package:bot_toast/bot_toast.dart';
+import 'package:easy_avatar/easy_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/intl_localizations.dart';
 import 'package:matertino_radio/matertino_radio.dart';
 import 'package:provider/provider.dart';
 import 'package:vcare_flutter/model/model.dart';
 import 'package:vcare_flutter/state/vcare_app_state.dart';
+
+import '../../common/constants.dart';
 
 class SwitchCommunity extends StatefulWidget {
   const SwitchCommunity({super.key});
@@ -14,7 +18,7 @@ class SwitchCommunity extends StatefulWidget {
 
 class _SwitchCommunityState extends State<SwitchCommunity> {
   List<Config> configList = [];
-  int configId = 0;
+  int? configId;
 
   @override
   void initState() {
@@ -27,19 +31,73 @@ class _SwitchCommunityState extends State<SwitchCommunity> {
     var appState = context.watch<VcareAppState>();
     List<Widget> items = List.generate(configList.length, (index) {
       return MatertinoRadioListTile(
-        value: index,
-        groupValue: configId - 1,
+        value: configList[index].id,
+        groupValue: configId,
         title: configList[index].name!,
         tileColor: Colors.transparent,
-        onChanged: (int? value) {
-          configId = value! + 1;
+        //todo avatar
+        trailingWidget: const Avatar(
+          size: 35,
+          margin: EdgeInsets.all(5),
+          textMode: true,
+          text: "菜籽",
+        ),
+        onChanged: (value) {
+          setState(() {
+            configId = value!;
+          });
         },
       );
     });
 
+    Widget btn = Row(
+      children: [
+        Expanded(
+            flex: 1,
+            child: Padding(
+              padding: const EdgeInsets.only(
+                left: 15,
+                right: 15,
+              ),
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, communityAdd);
+                },
+                child: Text(AppLocalizations.of(context)!.newCommunity),
+              ),
+            )),
+        Expanded(
+            flex: 1,
+            child: Padding(
+              padding: const EdgeInsets.only(
+                left: 15,
+                right: 15,
+              ),
+              child: ElevatedButton(
+                onPressed: () async {
+                  if (configId == null) {
+                    BotToast.showText(
+                        text:
+                            AppLocalizations.of(context)!.notSelectedCommunity);
+                    return;
+                  }
+                  await appState.changeConfigById(configId);
+                  if (context.mounted) {
+                    Navigator.pushReplacementNamed(context, nav);
+                  }
+                },
+                child: Text(AppLocalizations.of(context)!.joinCommunity),
+              ),
+            )),
+      ],
+    );
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+        title: Text(
+          AppLocalizations.of(context)!.switchCommunity,
+        ),
       ),
       body: LayoutBuilder(builder: (context, constraint) {
         return Center(
@@ -50,15 +108,11 @@ class _SwitchCommunityState extends State<SwitchCommunity> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    Text(
-                      AppLocalizations.of(context)!.switchCommunity,
-                      style: const TextStyle(fontSize: 16),
-                    ),
-                  ],
+                ...items,
+                const SizedBox(
+                  height: 15,
                 ),
-                ...items
+                btn,
               ],
             ),
           ),
@@ -72,8 +126,5 @@ class _SwitchCommunityState extends State<SwitchCommunity> {
     setState(() {
       configList = list;
     });
-    for (var value in configList) {
-      print(value.toJson());
-    }
   }
 }

@@ -110,6 +110,16 @@ class S {
     );
   }
 
+  /// `New communities`
+  String get newCommunity {
+    return Intl.message(
+      'New communities',
+      name: 'newCommunity',
+      desc: '新的社区',
+      args: [],
+    );
+  }
+
   /// `Home`
   String get home {
     return Intl.message(
@@ -236,6 +246,16 @@ class S {
       'Please enter community URL',
       name: 'communityUrlPlaceholder',
       desc: '请输入社区URL',
+      args: [],
+    );
+  }
+
+  /// `Please select a community`
+  String get notSelectedCommunity {
+    return Intl.message(
+      'Please select a community',
+      name: 'notSelectedCommunity',
+      desc: '请选择一个社区',
       args: [],
     );
   }

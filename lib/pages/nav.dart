@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/intl_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:vcare_flutter/common/constants.dart';
+import 'package:vcare_flutter/pages/community/add_community.dart';
 import 'package:vcare_flutter/pages/nav/home.dart';
 import 'package:vcare_flutter/pages/nav/mine.dart';
 import 'package:vcare_flutter/state/vcare_app_state.dart';
@@ -119,13 +120,14 @@ class _DrawerState extends State<_Drawer> {
   logoutCommunity(BuildContext context) async {
     var config = appState.config;
     await appState.removeCurrentConfig();
-
     var count = await config.select().toCount();
     if (count > 0) {
     } else {
       if (context.mounted) {
-        Navigator.of(context)
-            .pushNamedAndRemoveUntil(communityAdd, (route) => false);
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => const AddCommunity()),
+          (route) => false,
+        );
       }
     }
   }
@@ -138,13 +140,13 @@ class _DrawerState extends State<_Drawer> {
 class _DrawerHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    var state = context.watch<VcareAppState>();
+    var state = context.read<VcareAppState>();
     return Row(
       children: [
         Avatar(
           size: 75,
           textMode: true,
-          text: state.config.name!,
+          text: state.config.name ?? appName,
           backgroundColor: Theme.of(context).colorScheme.secondary,
         ),
         Expanded(
@@ -153,7 +155,7 @@ class _DrawerHeader extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                state.config.name!,
+                state.config.name ?? appName,
                 style: const TextStyle(fontSize: 24),
               ),
             ],
@@ -180,8 +182,6 @@ class _Avatar extends StatelessWidget {
         child: Avatar(
           size: size,
           margin: const EdgeInsets.all(5),
-          // textMode: true,
-          // text: "菜籽",
           image: defaultAvatar,
         ),
       ),

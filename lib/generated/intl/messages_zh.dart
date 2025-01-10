@@ -36,8 +36,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "joinCommunity": MessageLookupByLibrary.simpleMessage("进入社区"),
         "login": MessageLookupByLibrary.simpleMessage("登录"),
         "mine": MessageLookupByLibrary.simpleMessage("我的"),
+        "newCommunity": MessageLookupByLibrary.simpleMessage("新的社区"),
         "nextStep": MessageLookupByLibrary.simpleMessage("下一步"),
         "notLogin": MessageLookupByLibrary.simpleMessage("未登录"),
+        "notSelectedCommunity": MessageLookupByLibrary.simpleMessage("请选择一个社区"),
         "password": MessageLookupByLibrary.simpleMessage("密码"),
         "passwordAgain": MessageLookupByLibrary.simpleMessage("确认密码"),
         "passwordAgainPlaceholder":

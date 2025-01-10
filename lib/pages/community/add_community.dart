@@ -35,15 +35,19 @@ class _AddCommunityState extends State<AddCommunity> {
   }
 
   _getCommunityToast() {
-    BotToast.showText(
-      text: AppLocalizations.of(context)!.cannotCommunity,
-    );
+    if (context.mounted) {
+      BotToast.showText(
+        text: AppLocalizations.of(context)!.cannotCommunity,
+      );
+    }
   }
 
   _communityExistToast() {
-    BotToast.showText(
-      text: AppLocalizations.of(context)!.communityExists,
-    );
+    if (context.mounted) {
+      BotToast.showText(
+        text: AppLocalizations.of(context)!.communityExists,
+      );
+    }
   }
 
   @override
@@ -99,10 +103,12 @@ class _AddCommunityState extends State<AddCommunity> {
                               context.mounted) {
                             var state = Provider.of<VcareAppState>(context,
                                 listen: false);
-                            state.config.baseUrl = communityUrl;
-                            state.config.name = configInfo!.community;
-                            state.config.version = configInfo.version;
-                            state.changeConfig(state.config);
+                            var config = Config(
+                              baseUrl: communityUrl,
+                              name: configInfo!.community,
+                              version: configInfo.version,
+                            );
+                            state.changeConfig(config);
                             if (context.mounted) {
                               Navigator.push(
                                   context,
@@ -289,7 +295,6 @@ class _ThemeConfigState extends State<ThemeConfig> {
         appBar: AppBar(
           title: Text(AppLocalizations.of(context)!.themeSettings),
           backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-          centerTitle: true,
         ),
         body: KeyboardAvoider(
           child: LayoutBuilder(builder: (context, constraint) {

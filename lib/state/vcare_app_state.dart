@@ -19,7 +19,6 @@ class VcareAppState extends ChangeNotifier {
     await config.delete();
     await Prefs.deleteConfig();
     await initState();
-    notifyListeners();
   }
 
   Future<void> changeConfigById(int? configId) async {

@@ -45,10 +45,5 @@ flutter:
   generate: true
   assets:
     - assets/images/
-  fonts:
-    - family: HarmonyOS
-      fonts:
-        - asset: assets/fonts/HarmonyOS.ttf
-          style: normal
 flutter_intl:
   enabled: true

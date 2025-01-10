@@ -11,7 +11,9 @@ final List<AppTheme> defaultThemeList = [
 
 final Config defaultConfig = Config(isDark: false, appThemeId: 1);
 
+const String appName="Vcare";
 const String defaultAvatar = "assets/images/default_avatar.jpg";
+
 
 const String nav = "/nav";
 const String communityAdd = "/community/add";
